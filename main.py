@@ -48,21 +48,21 @@ def move(input):
   global y
   global speed
 
-  if input[pygame.K_UP]:
+  if input[pygame.K_UP] and y >= speed:
     y -= speed
     return True
-  if input[pygame.K_DOWN]:
+  if input[pygame.K_DOWN] and y <= (height - speed - playerImg.get_height()):
     y += speed
     return True
-  if input[pygame.K_RIGHT]:
+  if input[pygame.K_RIGHT] and x <= (width - speed - playerImg.get_width()):
     x += speed
     return True
-  if input[pygame.K_LEFT]:
+  if input[pygame.K_LEFT] and x >= speed:
     x -= speed
     return True
   if input[pygame.K_EQUALS]:
     speed += 0.1
-    pygame.time.wait(1)
+    pygame.time.wait(0.5)
     return False
   if input[pygame.K_MINUS] and speed >= 0.1:
     speed -= 0.1
@@ -84,7 +84,7 @@ def drawBG(x, y, width, height):
     for j in range(0, int(height/100)):
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
 
-
+drawBG(0, 0, width, height)
 while True:
   ENEMYSURF.fill(transparent)
   keypress = pygame.key.get_pressed()
@@ -123,7 +123,7 @@ while True:
     alive = False
 
 
-  enemyY += enemySpeed 
+  enemyX += enemySpeed 
   
   if alive == False:
     pygame.quit()
