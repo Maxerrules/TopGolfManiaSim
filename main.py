@@ -3,28 +3,38 @@ import sys
 import pygame
 from pygame.locals import QUIT
 from random import randint as randint
-
+from BGmap import BGmap
 pygame.init()
 
 #variables
 DISPLAYSURF = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 ENEMYSURF = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 BGSURF = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
-x = 0
-y = 0
+playerX = 0
+playerY = 0
 width = DISPLAYSURF.get_width()
 height = DISPLAYSURF.get_height()
 transparent = (0, 0, 0, 100)
 terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
-speed = 5
+
+speed = 3
 enemySpeed = 1
+
 won = False
 level = 0
+
 playerImgPath = "player_v2.png"
 playerImg = pygame.image.load(playerImgPath)
+
 FairwayImgPath = "Fairway.png"
+FairwayImg = pygame.image.load(FairwayImgPath)
+
 RoughImgPath = "Rough.png"
-BGimg = pygame.image.load(FairwayImgPath)
+RoughImg = pygame.image.load(RoughImgPath)
+
+ballImgPath = "New Piskel.png"
+ballImg = pygame.image.load(ballImgPath)
+
 enemyImgPath = "Grassmaaier.png"
 enemyImg = pygame.image.load(enemyImgPath)
 enemyImg = pygame.transform.flip(enemyImg, True, False)
@@ -35,6 +45,7 @@ alive = True
 
 
 pygame.display.set_caption("Golfrogue")
+pygame.display.toggle_fullscreen()
 
 #functions
 
@@ -44,21 +55,21 @@ def move(input):
   :param input: Keypress (pygame.key.get_pressed())
   :return (bool): Boolean waarde of er is bewogen.
   """
-  global x
-  global y
+  global playerX
+  global playerY
   global speed
 
-  if input[pygame.K_UP] and y >= speed:
-    y -= speed
+  if input[pygame.K_UP] and playerY >= speed:
+    playerY -= speed
     return True
-  if input[pygame.K_DOWN] and y <= (height - speed - playerImg.get_height()):
-    y += speed
+  if input[pygame.K_DOWN] and playerY <= (height - speed - playerImg.get_height()):
+    playerY += speed
     return True
-  if input[pygame.K_RIGHT] and x <= (width - speed - playerImg.get_width()):
-    x += speed
+  if input[pygame.K_RIGHT] and playerX <= (width - speed - playerImg.get_width()):
+    playerX += speed
     return True
-  if input[pygame.K_LEFT] and x >= speed:
-    x -= speed
+  if input[pygame.K_LEFT] and playerX >= speed:
+    playerX -= speed
     return True
   if input[pygame.K_EQUALS]:
     speed += 0.1
@@ -79,25 +90,32 @@ def drawBG(x, y, width, height):
   :param height: De hoogte van de te tekenen achtergrond.
   :return: None
   """
-  global BGimg
   for i in range(0, int(width/100)):
     for j in range(0, int(height/100)):
+      BGimgCode = BGmap[i][j]
+      if BGimgCode == 1:
+        BGimg = FairwayImg
+      elif BGimgCode == 2:
+        BGimg = RoughImg
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
 
 drawBG(0, 0, width, height)
 while True:
   ENEMYSURF.fill(transparent)
+  drawBG(0, 0, width, height)
   keypress = pygame.key.get_pressed()
   
   moved = move(keypress)
   if moved:
     DISPLAYSURF.fill(transparent)
+    drawBG(0, 0, width, height)
+ 
   img = pygame.transform.scale_by(playerImg, 1)
   
   if won:
     level += 1
 
-  if enemyX > width:
+  if enemyX > width - enemyImg.get_width()  :
     enemyX = 0
     enemyY = randint(0, height)
 
@@ -107,30 +125,28 @@ while True:
         sys.exit()
     if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
       height -= 100
-      drawBG(0, 0, width, height)
     if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
       height += 100
-      drawBG(0, 0, width, height)
     if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
       width -= 100
-      drawBG(0, 0, width, height)
     if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
       width += 100
-      drawBG(0, 0, width, height)
 
   
-  if x >= enemyX - 35 and x <= enemyX + 35 and y <= enemyY + 100 and y >= enemyY - 35:
+  #if playerX >= enemyX - 35 and playerX <= enemyX + 35 and playerY <= enemyY + 100 and playerY >= enemyY - 35:
+  if enemyImg.get_rect().colliderect(playerImg.get_rect()) and pygame.key.get_pressed()[pygame.K_q]:
     alive = False
 
 
   enemyX += enemySpeed 
   
   if alive == False:
+    print("========== GAME OVER ==========")
     pygame.quit()
     sys.exit()
 
   pygame.time.wait(1)
   
-  DISPLAYSURF.blit(img, (x,y))
+  DISPLAYSURF.blit(img, (playerX, playerY))
   ENEMYSURF.blit(enemyImg, (enemyX, enemyY))
   pygame.display.update()
