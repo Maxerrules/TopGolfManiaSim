@@ -88,8 +88,7 @@ def drawBG(x, y, width, height):
   :param height: De hoogte van de te tekenen achtergrond.
   :return: None
   """
-  global RoughImg
-
+  global ballImg
   for i in range(0, int(width/100)):
     for j in range(0, int(height/100)):
       #BGimgCode = BGmap[i][j]
@@ -97,7 +96,11 @@ def drawBG(x, y, width, height):
       #  BGimg = FairwayImg
       #elif BGimgCode == 2:
       #  BGimg = RoughImg
-      BGSURF.blit(RoughImg, (x+i*100, y+j*100))
+      #else:
+      BGimg = ballImg
+      BGSURF.blit(BGimg, (x+i*100, y+j*100))
+      print(j)
+    print(i)
 
 drawBG(0, 0, width, height)
 while True:
@@ -134,7 +137,7 @@ while True:
 
   
   #if playerX >= enemyX - 35 and playerX <= enemyX + 35 and playerY <= enemyY + 100 and playerY >= enemyY - 35:
-  if enemyImg.get_rect().colliderect(playerImg.get_rect()) and pygame.key.get_pressed()[pygame.K_q]:
+  if enemyRect.colliderect(playerRect) and pygame.key.get_pressed()[pygame.K_q]:
     alive = False
 
 
