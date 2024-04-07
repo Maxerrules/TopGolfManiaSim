@@ -24,6 +24,7 @@ level = 0
 
 playerImgPath = "player_v2.png"
 playerImg = pygame.image.load(playerImgPath)
+playerImg = pygame.transform.scale_by(playerImg, 1)
 playerRect = playerImg.get_rect()
 
 FairwayImgPath = "Fairway.png"
@@ -34,13 +35,22 @@ RoughImg = pygame.image.load(RoughImgPath)
 
 ballImgPath = "New Piskel.png"
 ballImg = pygame.image.load(ballImgPath)
+ballRect = ballImg.get_rect()
+ballAlive = False
+ballSpeed = None, None
+
+
+holeImgPath = "New Piskel.png"
+holeImg = pygame.image.load(holeImgPath)
+holeRect = holeImg.get_rect()
+holeRect.x, holeRect.y = randint(0, (width - holeImg.get_width())), randint(0, (height - holeImg.get_height()))
 
 enemyImgPath = "Grassmaaier.png"
 enemyImg = pygame.image.load(enemyImgPath)
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
+enemyRect.y = 250
 alive = True
-
 
 
 pygame.display.set_caption("Golfrogue")
@@ -56,6 +66,7 @@ def move(input):
   """
   global playerRect
   global speed
+  global ballAlive
 
   if input[pygame.K_UP] and playerRect.y >= speed:
     playerRect.y -= speed
@@ -77,6 +88,9 @@ def move(input):
     speed -= 0.1
     pygame.time.wait(0.5)
     return False
+  if input[pygame.K_e] and not ballAlive:
+    spawnBall()
+    return True
   return False
 
 def drawBG(x, y, width, height):
@@ -88,19 +102,25 @@ def drawBG(x, y, width, height):
   :param height: De hoogte van de te tekenen achtergrond.
   :return: None
   """
-  global ballImg
+  BGimgCode = None
   for i in range(0, int(width/100)):
     for j in range(0, int(height/100)):
       #BGimgCode = BGmap[i][j]
-      #if BGimgCode == 1:
-      #  BGimg = FairwayImg
-      #elif BGimgCode == 2:
-      #  BGimg = RoughImg
-      #else:
-      BGimg = ballImg
+      if BGimgCode == 1:
+        BGimg = FairwayImg
+      elif BGimgCode == 2:
+        BGimg = RoughImg
+      else:
+        BGimg = RoughImg
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
-      print(j)
-    print(i)
+
+def spawnBall():
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y
+  ballSpeed = 2, 2
 
 drawBG(0, 0, width, height)
 while True:
@@ -112,13 +132,8 @@ while True:
   if moved:
     DISPLAYSURF.fill(transparent)
     drawBG(0, 0, width, height)
- 
-  img = pygame.transform.scale_by(playerImg, 1)
-  
-  if won:
-    level += 1
-
-  if enemyRect.x > width - enemyImg.get_width()  :
+   
+  if enemyRect.x > width - enemyImg.get_width():
     enemyRect.x = 0
     enemyRect.y = randint(0, height)
 
@@ -126,7 +141,7 @@ while True:
     if event.type == QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
         pygame.quit()
         sys.exit()
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_w: #  Om achtergrond aan te passen, niet houden voor eindproduct
       height -= 100
     if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
       height += 100
@@ -135,14 +150,27 @@ while True:
     if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
       width += 100
 
-  
-  #if playerX >= enemyX - 35 and playerX <= enemyX + 35 and playerY <= enemyY + 100 and playerY >= enemyY - 35:
-  if enemyRect.colliderect(playerRect) and pygame.key.get_pressed()[pygame.K_q]:
-    alive = False
+  if won:
+    #level += 1
+    print("========== YAY! You won! ==========")
+    pygame.quit()
+    sys.exit()
 
+  #if playerX >= enemyX - 35 and playerX <= enemyX + 35 and playerY <= enemyY + 100 and playerY >= enemyY - 35:
+  if playerRect.colliderect(enemyRect):
+    alive = False
+  elif ballRect.colliderect(holeRect):
+    won = True
 
   enemyRect.x += enemySpeed 
   
+  if ballAlive and (ballRect.x < width or ballRect.y < height):
+    ballRect.x += ballSpeed[0]
+    ballRect.y += ballSpeed[1]
+    DISPLAYSURF.blit(ballImg, ballRect)
+  elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
+    ballAlive = False
+
   if alive == False:
     print("========== GAME OVER ==========")
     pygame.quit()
@@ -150,6 +178,7 @@ while True:
 
   pygame.time.wait(10)
   
-  DISPLAYSURF.blit(img, playerRect)
+  DISPLAYSURF.blit(holeImg, holeRect)
   ENEMYSURF.blit(enemyImg, enemyRect)
+  DISPLAYSURF.blit(playerImg, playerRect)
   pygame.display.update()
