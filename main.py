@@ -19,6 +19,7 @@ terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
 speed = 3
 enemySpeed = 1
 
+alive = True
 won = False
 level = 0
 
@@ -39,6 +40,11 @@ ballRect = ballImg.get_rect()
 ballAlive = False
 ballSpeed = None, None
 
+club1ImgPath = "golfClub.png"
+
+clubImg = pygame.image.load(club1ImgPath)
+clubRect = clubImg.get_rect()
+clubRect.x, clubRect.y = width - clubImg.get_width() - 20, 20
 
 holeImgPath = "New Piskel.png"
 holeImg = pygame.image.load(holeImgPath)
@@ -50,11 +56,10 @@ enemyImg = pygame.image.load(enemyImgPath)
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
 enemyRect.y = 250
-alive = True
 
 
 pygame.display.set_caption("Golfrogue")
-pygame.display.toggle_fullscreen()
+#pygame.display.toggle_fullscreen()
 
 #functions
 
@@ -103,9 +108,10 @@ def drawBG(x, y, width, height):
   :return: None
   """
   BGimgCode = None
+  print(BGmap)
   for i in range(0, int(width/100)):
     for j in range(0, int(height/100)):
-      #BGimgCode = BGmap[i][j]
+      BGimgCode = BGmap[i][j]
       if BGimgCode == 1:
         BGimg = FairwayImg
       elif BGimgCode == 2:
@@ -156,7 +162,6 @@ while True:
     pygame.quit()
     sys.exit()
 
-  #if playerX >= enemyX - 35 and playerX <= enemyX + 35 and playerY <= enemyY + 100 and playerY >= enemyY - 35:
   if playerRect.colliderect(enemyRect):
     alive = False
   elif ballRect.colliderect(holeRect):
@@ -170,6 +175,8 @@ while True:
     DISPLAYSURF.blit(ballImg, ballRect)
   elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
     ballAlive = False
+    pygame.quit()
+    sys.exit()
 
   if alive == False:
     print("========== GAME OVER ==========")
@@ -179,6 +186,7 @@ while True:
   pygame.time.wait(10)
   
   DISPLAYSURF.blit(holeImg, holeRect)
+  DISPLAYSURF.blit(clubImg, clubRect)
   ENEMYSURF.blit(enemyImg, enemyRect)
   DISPLAYSURF.blit(playerImg, playerRect)
   pygame.display.update()
