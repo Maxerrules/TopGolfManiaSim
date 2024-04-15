@@ -16,6 +16,11 @@ height = DISPLAYSURF.get_height()
 transparent = (0, 0, 0, 100)
 terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
 
+started = False
+
+startMenuImgPath = "Achtergrond.png"
+startMenuImg = pygame.image.load(startMenuImgPath)
+
 speed = 3
 enemySpeed = 1
 
@@ -24,42 +29,47 @@ won = False
 level = 0
 
 playerImgPath = "player_v2.png"
-playerImg = pygame.image.load(playerImgPath)
+playerImg = pygame.image.load(playerImgPath).convert_alpha()
 playerImg = pygame.transform.scale_by(playerImg, 1)
 playerRect = playerImg.get_rect()
 
 FairwayImgPath = "Fairway.png"
-FairwayImg = pygame.image.load(FairwayImgPath)
+FairwayImg = pygame.image.load(FairwayImgPath).convert_alpha()
 
 RoughImgPath = "Rough.png"
-RoughImg = pygame.image.load(RoughImgPath)
+RoughImg = pygame.image.load(RoughImgPath).convert_alpha()
+
+GreenImgPath = "groem.png"
+GreenImg = pygame.image.load(GreenImgPath).convert_alpha()
+
+WaterImgPath = "waderr.png"
+WaterImg = pygame.image.load(WaterImgPath).convert_alpha()
 
 ballImgPath = "New Piskel.png"
-ballImg = pygame.image.load(ballImgPath)
+ballImg = pygame.image.load(ballImgPath).convert_alpha()
 ballRect = ballImg.get_rect()
 ballAlive = False
 ballSpeed = None, None
 
 club1ImgPath = "golfClub.png"
 
-clubImg = pygame.image.load(club1ImgPath)
+clubImg = pygame.image.load(club1ImgPath).convert_alpha()
 clubRect = clubImg.get_rect()
 clubRect.x, clubRect.y = width - clubImg.get_width() - 20, 20
 
-holeImgPath = "New Piskel.png"
-holeImg = pygame.image.load(holeImgPath)
+holeImgPath = "hole.png"
+holeImg = pygame.image.load(holeImgPath).convert_alpha()
 holeRect = holeImg.get_rect()
 holeRect.x, holeRect.y = randint(0, (width - holeImg.get_width())), randint(0, (height - holeImg.get_height()))
 
 enemyImgPath = "Grassmaaier.png"
-enemyImg = pygame.image.load(enemyImgPath)
+enemyImg = pygame.image.load(enemyImgPath).convert_alpha()
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
 enemyRect.y = 250
 
 
 pygame.display.set_caption("Golfrogue")
-#pygame.display.toggle_fullscreen()
 
 #functions
 
@@ -71,7 +81,6 @@ def move(input):
   """
   global playerRect
   global speed
-  global ballAlive
 
   if input[pygame.K_UP] and playerRect.y >= speed:
     playerRect.y -= speed
@@ -87,13 +96,11 @@ def move(input):
     return True
   if input[pygame.K_EQUALS]:
     speed += 0.1
-    pygame.time.wait(0.5)
     return False
   if input[pygame.K_MINUS] and speed >= 0.1:
     speed -= 0.1
-    pygame.time.wait(0.5)
     return False
-  if input[pygame.K_e] and not ballAlive:
+  if input[pygame.K_SPACE] and not ballAlive:
     spawnBall()
     return True
   return False
@@ -108,7 +115,6 @@ def drawBG(x, y, width, height):
   :return: None
   """
   BGimgCode = None
-  print(BGmap)
   for i in range(0, int(width/100)):
     for j in range(0, int(height/100)):
       BGimgCode = BGmap[i][j]
@@ -116,6 +122,8 @@ def drawBG(x, y, width, height):
         BGimg = FairwayImg
       elif BGimgCode == 2:
         BGimg = RoughImg
+      elif BGimgCode == 3:
+        BGimg = GreenImg
       else:
         BGimg = RoughImg
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
@@ -128,10 +136,32 @@ def spawnBall():
   ballRect.x, ballRect.y = playerRect.x, playerRect.y
   ballSpeed = 2, 2
 
+
+
+while not started:
+  startButton = pygame.Surface((100, 50))
+  startButton.fill ((128, 128, 128))
+  DISPLAYSURF.blit(startButton, (200, 200))
+  
+
+
+  for event in pygame.event.get():   
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+      pygame.quit()
+      sys.exit()
+    if event.type == pygame.mouse.get_pressed:
+      pos = pygame.mouse.get_pos()
+      if startButton.get_rect().collidepoint(pos):
+        started = True
+  
+  pygame.display.update()
+
+
+
 drawBG(0, 0, width, height)
-while True:
+while started == True:
   ENEMYSURF.fill(transparent)
-  drawBG(0, 0, width, height)
+  #drawBG(0, 0, width, height)
   keypress = pygame.key.get_pressed()
   
   moved = move(keypress)
@@ -169,7 +199,9 @@ while True:
 
   enemyRect.x += enemySpeed 
   
-  if ballAlive and (ballRect.x < width or ballRect.y < height):
+
+
+  if ballAlive and ballRect.x < width and ballRect.y < height:
     ballRect.x += ballSpeed[0]
     ballRect.y += ballSpeed[1]
     DISPLAYSURF.blit(ballImg, ballRect)
