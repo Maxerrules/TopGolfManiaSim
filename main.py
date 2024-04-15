@@ -16,7 +16,7 @@ height = DISPLAYSURF.get_height()
 transparent = (0, 0, 0, 100)
 terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
 
-started = False
+started = True
 
 startMenuImgPath = "Achtergrond.png"
 startMenuImg = pygame.image.load(startMenuImgPath)
@@ -45,7 +45,7 @@ GreenImg = pygame.image.load(GreenImgPath).convert_alpha()
 WaterImgPath = "waderr.png"
 WaterImg = pygame.image.load(WaterImgPath).convert_alpha()
 
-ballImgPath = "New Piskel.png"
+ballImgPath = "ball.png"
 ballImg = pygame.image.load(ballImgPath).convert_alpha()
 ballRect = ballImg.get_rect()
 ballAlive = False
@@ -159,8 +159,7 @@ while not started:
 
 
 drawBG(0, 0, width, height)
-while started == True:
-  ENEMYSURF.fill(transparent)
+while started:
   #drawBG(0, 0, width, height)
   keypress = pygame.key.get_pressed()
   
@@ -207,8 +206,6 @@ while started == True:
     DISPLAYSURF.blit(ballImg, ballRect)
   elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
     ballAlive = False
-    pygame.quit()
-    sys.exit()
 
   if alive == False:
     print("========== GAME OVER ==========")
