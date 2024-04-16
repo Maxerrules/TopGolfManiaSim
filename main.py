@@ -145,7 +145,8 @@ def drawTitle(message, x, y):
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
-
+pygame.mixer.music.load(startMenuMusic)
+pygame.mixer.music.play(-1)
 while not started:
 
   DISPLAYSURF.fill(transparent)
