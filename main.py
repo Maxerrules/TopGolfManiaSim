@@ -22,6 +22,10 @@ startMenuImgPath = "Achtergrond.png"
 startMenuImg = pygame.image.load(startMenuImgPath)
 startMenuRect = startMenuImg.get_rect()
 
+startMenuMusic = "golfmania startmenu music.mp3"
+gameMusic = "Golf game song.mp3"
+youDed = "you ded.mp3"
+
 speed = 3
 enemySpeed = 1
 
@@ -154,7 +158,12 @@ def drawTitle(message, x, y):
   DISPLAYSURF.blit(TextSurf, TextRect)
 
 
+pygame.mixer.music.load(startMenuMusic)
+pygame.mixer.music.play(-1)
+  
+pygame.display.update()
 while not started:
+
   DISPLAYSURF.fill(transparent)
   startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
   DISPLAYSURF.blit(startMenuImg, (0, 0))
@@ -175,6 +184,8 @@ while not started:
       sys.exit()
     if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
       started = True
+      pygame.mixer.music.stop()
+      pygame.mixer.music.unload()
   
   pygame.display.update()
 
@@ -191,6 +202,9 @@ while started:
   playerRect.x = 0
   enemyAlive = True
   level = 1
+  pygame.mixer.music.load(gameMusic)
+  pygame.mixer.music.play(-1)
+
   while alive:
     drawBG(0, 0, width, height)
     keypress = pygame.key.get_pressed()
@@ -257,7 +271,8 @@ while started:
     DISPLAYSURF.blit(playerImg, playerRect)
     pygame.display.update()
 
-
+  pygame.mixer.music.load(youDed)
+  pygame.mixer.music.play(-1)
   while not alive:
     startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
     DISPLAYSURF.blit(startMenuImg, (0, 0))
