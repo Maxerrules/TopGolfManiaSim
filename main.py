@@ -67,7 +67,7 @@ enemyImgPath = "Grassmaaier.png"
 enemyImg = pygame.image.load(enemyImgPath).convert_alpha()
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
-enemyRect.y = 250
+enemyRect.y = height - 100
 
 
 pygame.display.set_caption("Golfrogue")
@@ -155,13 +155,18 @@ def drawTitle(message, x, y):
 
 
 while not started:
+  DISPLAYSURF.fill(transparent)
   startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
   DISPLAYSURF.blit(startMenuImg, (0, 0))
+  DISPLAYSURF.blit(enemyImg, enemyRect)
 
   drawMessage("Press space to start", width/2, 600)
   drawTitle("GOLFMANIA", width/2, 300)
 
-
+  enemyRect.x += enemySpeed 
+  if enemyRect.x > width - enemyImg.get_width():
+    enemyRect.x = 0
+    enemyRect.y = height
 
   for event in pygame.event.get():   
     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -173,7 +178,7 @@ while not started:
   pygame.display.update()
 
 
-
+enemyRect.y = 250
 drawBG(0, 0, width, height)
 while started:
   #drawBG(0, 0, width, height)
