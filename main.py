@@ -248,13 +248,13 @@ while started:
     startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
     DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-    drawMessage("Press space to restart", width/2, 600)
+    drawMessage("Press G to restart", width/2, 600, 20)
     drawTitle("You Died", width/2, 300)
     for event in pygame.event.get():   
       if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
         pygame.quit()
         sys.exit()
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
         alive = True
     
     pygame.display.update()
