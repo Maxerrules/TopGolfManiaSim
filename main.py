@@ -16,10 +16,11 @@ height = DISPLAYSURF.get_height()
 transparent = (0, 0, 0, 100)
 terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
 
-started = True
+started = False
 
 startMenuImgPath = "Achtergrond.png"
 startMenuImg = pygame.image.load(startMenuImgPath)
+startMenuRect = startMenuImg.get_rect()
 
 speed = 3
 enemySpeed = 1
@@ -136,23 +137,38 @@ def spawnBall():
   ballRect.x, ballRect.y = playerRect.x, playerRect.y
   ballSpeed = 2, 2
 
+def text_object(text, font):
+  textSurface = font.render(text, True, (0, 0, 0))
+  return textSurface, textSurface.get_rect()
+
+def drawMessage(message, x, y):
+  font = pygame.font.Font('PixeloidSans-mLxMm.ttf', 30)
+  TextSurf, TextRect = text_object(message, font)
+  TextRect.center = (x, y)
+  DISPLAYSURF.blit(TextSurf, TextRect)
+
+def drawTitle(message, x, y):
+  font = pygame.font.Font('Pixeboy-z8XGD.ttf', 150)
+  TextSurf, TextRect = text_object(message, font)
+  TextRect.center = (x, y)
+  DISPLAYSURF.blit(TextSurf, TextRect)
 
 
 while not started:
-  startButton = pygame.Surface((100, 50))
-  startButton.fill ((128, 128, 128))
-  DISPLAYSURF.blit(startButton, (200, 200))
-  
+  startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
+  DISPLAYSURF.blit(startMenuImg, (0, 0))
+
+  drawMessage("Press space to start", width/2, 600)
+  drawTitle("GOLFMANIA", width/2, 300)
+
 
 
   for event in pygame.event.get():   
     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
       pygame.quit()
       sys.exit()
-    if event.type == pygame.mouse.get_pressed:
-      pos = pygame.mouse.get_pos()
-      if startButton.get_rect().collidepoint(pos):
-        started = True
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+      started = True
   
   pygame.display.update()
 
@@ -188,8 +204,7 @@ while started:
   if won:
     #level += 1
     print("========== YAY! You won! ==========")
-    pygame.quit()
-    sys.exit()
+    
 
   if playerRect.colliderect(enemyRect):
     alive = False
