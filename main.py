@@ -68,7 +68,7 @@ enemyImg = pygame.image.load(enemyImgPath).convert_alpha()
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
 enemyRect.y = 250
-
+enemyAlive = True
 
 pygame.display.set_caption("Golfrogue")
 
@@ -175,63 +175,90 @@ while not started:
 
 
 
-drawBG(0, 0, width, height)
+
 while started:
-  #drawBG(0, 0, width, height)
-  keypress = pygame.key.get_pressed()
-  
-  moved = move(keypress)
-  if moved:
-    DISPLAYSURF.fill(transparent)
+
+  enemyRect.y = 250
+  holeRect.x, holeRect.y = randint(0, (width - holeImg.get_width())), randint(0, (height - holeImg.get_height()))
+  playerRect.y = 0
+  playerRect.x = 0
+  enemyAlive = True
+  while alive:
     drawBG(0, 0, width, height)
-   
-  if enemyRect.x > width - enemyImg.get_width():
-    enemyRect.x = 0
-    enemyRect.y = randint(0, height)
+    keypress = pygame.key.get_pressed()
+    
+    moved = move(keypress)
+    if moved:
+      DISPLAYSURF.fill(transparent)
+      drawBG(0, 0, width, height)
+    
+    if enemyRect.x > width - enemyImg.get_width() and enemyAlive == True:
+      enemyRect.x = 0
+      enemyRect.y = randint(0, height)
 
-  for event in pygame.event.get():   
-    if event.type == QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-        pygame.quit()
-        sys.exit()
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_w: #  Om achtergrond aan te passen, niet houden voor eindproduct
-      height -= 100
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-      height += 100
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
-      width -= 100
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
-      width += 100
+    for event in pygame.event.get():   
+      if event.type == QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+          pygame.quit()
+          sys.exit()
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_w: #  Om achtergrond aan te passen, niet houden voor eindproduct
+        height -= 100
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+        height += 100
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
+        width -= 100
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+        width += 100
 
-  if won:
-    #level += 1
-    print("========== YAY! You won! ==========")
+    if won:
+      #level += 1
+      print("========== YAY! You won! ==========")
+      
+
+    if playerRect.colliderect(enemyRect):
+      alive = False
+    elif ballRect.colliderect(holeRect):
+      won = True
+    elif ballRect.colliderect(enemyRect):
+      enemyAlive = False
+
+    enemyRect.x += enemySpeed 
     
 
-  if playerRect.colliderect(enemyRect):
-    alive = False
-  elif ballRect.colliderect(holeRect):
-    won = True
 
-  enemyRect.x += enemySpeed 
-  
+    if ballAlive and ballRect.x < width and ballRect.y < height:
+      ballRect.x += ballSpeed[0]
+      ballRect.y += ballSpeed[1]
+      DISPLAYSURF.blit(ballImg, ballRect)
+    elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
+      ballAlive = False
+
+    if alive == False:
+      print("========== GAME OVER ==========")
 
 
-  if ballAlive and ballRect.x < width and ballRect.y < height:
-    ballRect.x += ballSpeed[0]
-    ballRect.y += ballSpeed[1]
-    DISPLAYSURF.blit(ballImg, ballRect)
-  elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
-    ballAlive = False
+    pygame.time.wait(10)
+    
+    DISPLAYSURF.blit(holeImg, holeRect)
+    DISPLAYSURF.blit(clubImg, clubRect)
 
-  if alive == False:
-    print("========== GAME OVER ==========")
-    pygame.quit()
-    sys.exit()
+    if enemyAlive == True:
+      ENEMYSURF.blit(enemyImg, enemyRect)
 
-  pygame.time.wait(10)
-  
-  DISPLAYSURF.blit(holeImg, holeRect)
-  DISPLAYSURF.blit(clubImg, clubRect)
-  ENEMYSURF.blit(enemyImg, enemyRect)
-  DISPLAYSURF.blit(playerImg, playerRect)
-  pygame.display.update()
+    DISPLAYSURF.blit(playerImg, playerRect)
+    pygame.display.update()
+
+
+  while not alive:
+    startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
+    DISPLAYSURF.blit(startMenuImg, (0, 0))
+
+    drawMessage("Press space to restart", width/2, 600)
+    drawTitle("You Died", width/2, 300)
+    for event in pygame.event.get():   
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        pygame.quit()
+        sys.exit()
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        alive = True
+    
+    pygame.display.update()
