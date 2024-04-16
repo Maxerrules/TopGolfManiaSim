@@ -158,8 +158,9 @@ while not started:
   startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
   DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-  drawMessage("Press space to start", width/2, 600)
+  drawMessage("Press space to start", width/2, 500)
   drawTitle("GOLFMANIA", width/2, 300)
+  drawMessage("use arrow keys to move", width/2, 600)
 
 
 
