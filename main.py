@@ -142,13 +142,13 @@ def text_object(text, font):
   return textSurface, textSurface.get_rect()
 
 def drawMessage(message, x, y):
-  font = pygame.font.Font('PixeloidSans-mLxMm.ttf', 30)
+  font = pygame.font.Font('PixeloidSans.ttf', 30)
   TextSurf, TextRect = text_object(message, font)
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
 def drawTitle(message, x, y):
-  font = pygame.font.Font('Pixeboy-z8XGD.ttf', 150)
+  font = pygame.font.Font('Pixeboy.ttf', 150)
   TextSurf, TextRect = text_object(message, font)
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
