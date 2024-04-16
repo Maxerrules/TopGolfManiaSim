@@ -179,10 +179,13 @@ while not started:
 while started:
 
   enemyRect.y = 250
-  holeRect.x, holeRect.y = randint(0, (width - holeImg.get_width())), randint(0, (height - holeImg.get_height()))
+  enemyRect.x = 0
+  holeRect.x = 1200
+  holeRect.y = height/2
   playerRect.y = 0
   playerRect.x = 0
   enemyAlive = True
+  level = 1
   while alive:
     drawBG(0, 0, width, height)
     keypress = pygame.key.get_pressed()
@@ -192,7 +195,7 @@ while started:
       DISPLAYSURF.fill(transparent)
       drawBG(0, 0, width, height)
     
-    if enemyRect.x > width - enemyImg.get_width() and enemyAlive == True:
+    if enemyRect.x > width - enemyImg.get_width():
       enemyRect.x = 0
       enemyRect.y = randint(0, height)
 
@@ -209,17 +212,19 @@ while started:
       if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
         width += 100
 
-    if won:
-      #level += 1
-      print("========== YAY! You won! ==========")
+  
       
 
     if playerRect.colliderect(enemyRect):
       alive = False
-    elif ballRect.colliderect(holeRect):
-      won = True
+      ballAlive = False
+      enemyAlive = False
+    elif ballRect.colliderect(holeRect) and enemyAlive == False:
+      level = level+1 
+      ballAlive = False
     elif ballRect.colliderect(enemyRect):
       enemyAlive = False
+      ballAlive = False
 
     enemyRect.x += enemySpeed 
     
