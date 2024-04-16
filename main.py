@@ -68,7 +68,7 @@ enemyImg = pygame.image.load(enemyImgPath).convert_alpha()
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
 enemyRect.y = 250
-enemyAlive = True
+
 
 pygame.display.set_caption("Golfrogue")
 
@@ -142,27 +142,32 @@ def text_object(text, font):
   return textSurface, textSurface.get_rect()
 
 def drawMessage(message, x, y):
-  font = pygame.font.Font('PixeloidSans-mLxMm.ttf', 30)
+  font = pygame.font.Font('PixeloidSans.ttf', 30)
   TextSurf, TextRect = text_object(message, font)
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
 def drawTitle(message, x, y):
-  font = pygame.font.Font('Pixeboy-z8XGD.ttf', 150)
+  font = pygame.font.Font('Pixeboy.ttf', 150)
   TextSurf, TextRect = text_object(message, font)
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
 
 while not started:
+  DISPLAYSURF.fill(transparent)
   startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
   DISPLAYSURF.blit(startMenuImg, (0, 0))
+  DISPLAYSURF.blit(enemyImg, enemyRect)
 
   drawMessage("Press space to start", width/2, 500)
   drawTitle("GOLFMANIA", width/2, 300)
   drawMessage("use arrow keys to move", width/2, 600)
 
-
+  enemyRect.x += enemySpeed 
+  if enemyRect.x > width - enemyImg.get_width():
+    enemyRect.x = 0
+    enemyRect.y = height
 
   for event in pygame.event.get():   
     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -175,7 +180,7 @@ while not started:
 
 
 
-
+drawBG(0, 0, width, height)
 while started:
 
   enemyRect.y = 250
