@@ -50,7 +50,7 @@ ballImgPath = "ball.png"
 ballImg = pygame.image.load(ballImgPath).convert_alpha()
 ballRect = ballImg.get_rect()
 ballAlive = False
-ballSpeed = None, None
+ballSpeed = 3, 3
 
 club1ImgPath = "golfClub.png"
 
