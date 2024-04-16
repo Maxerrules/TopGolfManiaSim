@@ -19,15 +19,16 @@ terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
 started = False
 
 startMenuImgPath = "Achtergrond.png"
-startMenuImg = pygame.image.load(startMenuImgPath)
+startMenuImg = pygame.image.load(startMenuImgPath).convert_alpha()
 startMenuRect = startMenuImg.get_rect()
 
 speed = 3
-enemySpeed = 1
+enemySpeed = 2
 
 alive = True
 won = False
 level = 0
+tick = 0
 
 playerImgPath = "player_v2.png"
 playerImg = pygame.image.load(playerImgPath).convert_alpha()
@@ -61,14 +62,13 @@ clubRect.x, clubRect.y = width - clubImg.get_width() - 20, 20
 holeImgPath = "hole.png"
 holeImg = pygame.image.load(holeImgPath).convert_alpha()
 holeRect = holeImg.get_rect()
-holeRect.x, holeRect.y = randint(0, (width - holeImg.get_width())), randint(0, (height - holeImg.get_height()))
 
 enemyImgPath = "Grassmaaier.png"
 enemyImg = pygame.image.load(enemyImgPath).convert_alpha()
 enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
-enemyRect.y = 250
-
+enemyRect.y = height - 100
+enemyRect.x = 0 - enemyRect.width
 
 pygame.display.set_caption("Golfrogue")
 
@@ -85,26 +85,14 @@ def move(input):
 
   if input[pygame.K_UP] and playerRect.y >= speed:
     playerRect.y -= speed
-    return True
   if input[pygame.K_DOWN] and playerRect.y <= (height - speed - playerImg.get_height()):
     playerRect.y += speed
-    return True
   if input[pygame.K_RIGHT] and playerRect.x <= (width - speed - playerImg.get_width()):
     playerRect.x += speed
-    return True
   if input[pygame.K_LEFT] and playerRect.x >= speed:
     playerRect.x -= speed
-    return True
-  if input[pygame.K_EQUALS]:
-    speed += 0.1
-    return False
-  if input[pygame.K_MINUS] and speed >= 0.1:
-    speed -= 0.1
-    return False
   if input[pygame.K_SPACE] and not ballAlive:
     spawnBall()
-    return True
-  return False
 
 def drawBG(x, y, width, height):
   """
@@ -134,25 +122,24 @@ def spawnBall():
   global ballSpeed
 
   ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x, playerRect.y
+  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y + 5
   ballSpeed = 2, 2
 
 def text_object(text, font):
   textSurface = font.render(text, True, (0, 0, 0))
   return textSurface, textSurface.get_rect()
 
-def drawMessage(message, x, y):
-  font = pygame.font.Font('PixeloidSans.ttf', 30)
+def drawMessage(message, x, y, size):
+  font = pygame.font.Font('PixeloidSans.ttf', size)
   TextSurf, TextRect = text_object(message, font)
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
 def drawTitle(message, x, y):
-  font = pygame.font.Font('Pixeboy.ttf', 150)
+  font = pygame.font.Font('Pixeboy.ttf', 300)
   TextSurf, TextRect = text_object(message, font)
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
-
 
 while not started:
   DISPLAYSURF.fill(transparent)
@@ -160,24 +147,24 @@ while not started:
   DISPLAYSURF.blit(startMenuImg, (0, 0))
   DISPLAYSURF.blit(enemyImg, enemyRect)
 
-  drawMessage("Press space to start", width/2, 500)
-  drawTitle("GOLFMANIA", width/2, 300)
-  drawMessage("use arrow keys to move", width/2, 600)
+  drawMessage("Press G to start!", width/2, 500, 50)
+  drawTitle("GOLFMANIA", width/2, 250)
+  drawMessage("Use arrow keys to move", width/2, 600, 30)
 
   enemyRect.x += enemySpeed 
-  if enemyRect.x > width - enemyImg.get_width():
-    enemyRect.x = 0
-    enemyRect.y = height
+  if enemyRect.x > width - enemyImg.get_width() and (randint(1, 1000) == 1 or tick % 1000 == 0):
+    enemyRect.x = 0 - enemyRect.width
+    enemyRect.y = height - 100
 
   for event in pygame.event.get():   
     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
       pygame.quit()
       sys.exit()
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
       started = True
   
   pygame.display.update()
-
+  tick += 1
 
 
 drawBG(0, 0, width, height)
@@ -194,11 +181,7 @@ while started:
   while alive:
     drawBG(0, 0, width, height)
     keypress = pygame.key.get_pressed()
-    
-    moved = move(keypress)
-    if moved:
-      DISPLAYSURF.fill(transparent)
-      drawBG(0, 0, width, height)
+    move(keypress)
     
     if enemyRect.x > width - enemyImg.get_width():
       enemyRect.x = 0
@@ -206,19 +189,8 @@ while started:
 
     for event in pygame.event.get():   
       if event.type == QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-          pygame.quit()
-          sys.exit()
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_w: #  Om achtergrond aan te passen, niet houden voor eindproduct
-        height -= 100
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-        height += 100
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
-        width -= 100
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
-        width += 100
-
-  
-      
+        pygame.quit()
+        sys.exit()      
 
     if playerRect.colliderect(enemyRect):
       alive = False
@@ -229,11 +201,10 @@ while started:
       ballAlive = False
     elif ballRect.colliderect(enemyRect):
       enemyAlive = False
+      enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
 
-    enemyRect.x += enemySpeed 
-    
-
+    enemyRect.x += enemySpeed
 
     if ballAlive and ballRect.x < width and ballRect.y < height:
       ballRect.x += ballSpeed[0]
@@ -256,9 +227,11 @@ while started:
 
     DISPLAYSURF.blit(playerImg, playerRect)
     pygame.display.update()
+    tick += 1
 
 
   while not alive:
+    tick = 0
     startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
     DISPLAYSURF.blit(startMenuImg, (0, 0))
 
