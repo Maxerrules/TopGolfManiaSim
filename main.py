@@ -60,6 +60,7 @@ ballImg = pygame.image.load(ballImgPath).convert_alpha()
 ballRect = ballImg.get_rect()
 ballAlive = False
 ballSpeed = 3, 3
+ballMovementSpeed = 5
 
 club1ImgPath = "golfClub.png"
 
@@ -107,8 +108,55 @@ def move(input):
     playerRect.x += speed
   if input[pygame.K_LEFT] and playerRect.x >= speed:
     playerRect.x -= speed
-  if input[pygame.K_SPACE] and not ballAlive:
-    spawnBall()
+  if input[pygame.K_d] and not ballAlive:
+    spawnBallMovingRight()
+  if input[pygame.K_a] and not ballAlive:
+    spawnBallMovingLeft()
+  if input[pygame.K_s] and not ballAlive:
+    spawnBallMovingDown()
+  if input[pygame.K_w] and not ballAlive:
+    spawnBallMovingUp()
+
+
+def spawnBallMovingRight():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y
+  ballSpeed = ballMovementSpeed, 0
+
+def spawnBallMovingLeft():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x - 5, playerRect.y
+  ballSpeed = -ballMovementSpeed, 0
+
+def spawnBallMovingUp():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y - 5
+  ballSpeed = 0, -ballMovementSpeed
+
+def spawnBallMovingDown():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y + 5
+  ballSpeed = 0, ballMovementSpeed
 
 def drawBG(x, y, width, height):
   """
@@ -133,13 +181,7 @@ def drawBG(x, y, width, height):
         BGimg = RoughImg
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
 
-def spawnBall():
-  global ballAlive
-  global ballSpeed
 
-  ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y + 5
-  ballSpeed = 2, 2
 
 def text_object(text, font):
   textSurface = font.render(text, True, (0, 0, 0))
@@ -227,24 +269,24 @@ while started:
     elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False:
       level = level+1 
       ballAlive = False
-    elif ballRect.colliderect(enemyRect) and enemyAlive == True:
+    elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
       enemyAlive = False
       enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
-    elif ballRect.colliderect(oldManRect) and oldManAlive == True:
+    elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
       oldManAlive = False
       oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
       ballAlive = False
 
     enemyRect.x += enemySpeed
  
-    if ballAlive and ballRect.x < width and ballRect.y < height:
+    if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
       ballRect.x += ballSpeed[0]
       ballRect.y += ballSpeed[1]
       DISPLAYSURF.blit(ballImg, ballRect)
-    elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
+    elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
       ballAlive = False
-
+      
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
