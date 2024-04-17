@@ -26,7 +26,7 @@ startMenuMusic = "golfmania startmenu music.mp3"
 gameMusic = "Golf game song.mp3"
 youDed = "you ded.mp3"
 
-speed = 3
+speed = 4
 enemySpeed = 2
 
 alive = True
@@ -41,15 +41,19 @@ playerRect = playerImg.get_rect()
 
 FairwayImgPath = "Fairway.png"
 FairwayImg = pygame.image.load(FairwayImgPath).convert_alpha()
+fairwayRect = FairwayImg.get_rect()
 
 RoughImgPath = "Rough.png"
 RoughImg = pygame.image.load(RoughImgPath).convert_alpha()
+RoughRect = RoughImg.get_rect()
 
 GreenImgPath = "groem.png"
 GreenImg = pygame.image.load(GreenImgPath).convert_alpha()
+GreenRect = GreenImg.get_rect()
 
 WaterImgPath = "waderr.png"
 WaterImg = pygame.image.load(WaterImgPath).convert_alpha()
+WaterRect = WaterImg.get_rect()
 
 ballImgPath = "ball.png"
 ballImg = pygame.image.load(ballImgPath).convert_alpha()
@@ -73,6 +77,14 @@ enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
 enemyRect.y = height - 100
 enemyRect.x = 0 - enemyRect.width
+
+oldManImgPath = "oldMan.png"
+oldManImg = pygame.image.load(oldManImgPath).convert_alpha()
+oldManRect = oldManImg.get_rect()
+oldManRect.x = 500
+oldManRect.y = 500
+oldManAlive = True
+oldManSpeed = 2
 
 pygame.display.set_caption("Golfrogue")
 
@@ -187,6 +199,9 @@ while started:
   playerRect.x = 0
   enemyAlive = True
   level = 1
+  oldManRect.x = 500
+  oldManRect.y = 500
+  oldManAlive = True
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
 
@@ -204,20 +219,24 @@ while started:
         pygame.quit()
         sys.exit()      
 
-    if playerRect.colliderect(enemyRect):
+    if playerRect.colliderect(enemyRect) or playerRect.colliderect(oldManRect):
       alive = False
       ballAlive = False
       enemyAlive = False
-    elif ballRect.colliderect(holeRect) and enemyAlive == False:
+    elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False:
       level = level+1 
       ballAlive = False
-    elif ballRect.colliderect(enemyRect):
+    elif ballRect.colliderect(enemyRect) and enemyAlive == True:
       enemyAlive = False
       enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
+    elif ballRect.colliderect(oldManRect) and oldManAlive == True:
+      oldManAlive = False
+      oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
+      ballAlive = False
 
     enemyRect.x += enemySpeed
-
+ 
     if ballAlive and ballRect.x < width and ballRect.y < height:
       ballRect.x += ballSpeed[0]
       ballRect.y += ballSpeed[1]
@@ -228,9 +247,20 @@ while started:
     if alive == False:
       print("========== GAME OVER ==========")
 
+    if oldManRect.x > playerRect.x:
+      oldManRect.x = oldManRect.x - oldManSpeed
+    elif oldManRect.x < playerRect.x:
+      oldManRect.x = oldManRect.x + oldManSpeed
+    
+    if oldManRect.y > playerRect.y:
+      oldManRect.y = oldManRect.y - oldManSpeed
+    elif oldManRect.y < playerRect.x:
+      oldManRect.y = oldManRect.y + oldManSpeed
+
 
     pygame.time.wait(10)
-    
+    if oldManAlive == True:
+      DISPLAYSURF.blit(oldManImg, oldManRect)
     DISPLAYSURF.blit(holeImg, holeRect)
     DISPLAYSURF.blit(clubImg, clubRect)
 
@@ -248,13 +278,13 @@ while started:
     startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
     DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-    drawMessage("Press space to restart", width/2, 600)
+    drawMessage("Press G to restart!", width/2, 600, 50)
     drawTitle("You Died", width/2, 300)
     for event in pygame.event.get():   
       if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
         pygame.quit()
         sys.exit()
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
         alive = True
     
     pygame.display.update()
