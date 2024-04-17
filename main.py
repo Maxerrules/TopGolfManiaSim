@@ -219,10 +219,11 @@ while started:
         pygame.quit()
         sys.exit()      
 
-    if playerRect.colliderect(enemyRect) or playerRect.colliderect(oldManRect):
+    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True):
       alive = False
       ballAlive = False
       enemyAlive = False
+      oldManAlive = False
     elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False:
       level = level+1 
       ballAlive = False
@@ -244,8 +245,6 @@ while started:
     elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
       ballAlive = False
 
-    if alive == False:
-      print("========== GAME OVER ==========")
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
@@ -261,7 +260,8 @@ while started:
     pygame.time.wait(10)
     if oldManAlive == True:
       DISPLAYSURF.blit(oldManImg, oldManRect)
-    DISPLAYSURF.blit(holeImg, holeRect)
+    if oldManAlive == False and enemyAlive == False:
+      DISPLAYSURF.blit(holeImg, holeRect)
     DISPLAYSURF.blit(clubImg, clubRect)
 
     if enemyAlive == True:
