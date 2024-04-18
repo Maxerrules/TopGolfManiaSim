@@ -70,13 +70,14 @@ ballMachineimg = pygame.image.load(ballMachineImgPath).convert_alpha()
 ballMachineRect = ballMachineimg.get_rect()
 
 
-
-club1ImgPath = "golfClub.png"
-
-clubImg = pygame.image.load(club1ImgPath).convert_alpha()
+clubSelected = 0
+clubImgPaths = ["golfClub.png", "driver.png", "putter.png"]
+clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
 clubRect = clubImg.get_rect()
 clubRect.x, clubRect.y = 20, height - clubImg.get_height() - 20
 clubBGRect = pygame.Rect(clubRect.x - 10, clubRect.y - 10, clubRect.width + 20, clubRect.height + 20)
+clubWait = False
+clubClock = 0
 
 holeImgPath = "hole.png"
 holeImg = pygame.image.load(holeImgPath).convert_alpha()
@@ -110,7 +111,10 @@ def move(input):
   global playerRect
   global speed
   global amountOfBalls
-  
+  global clubSelected
+  global clubImg
+  global clubWait
+
   if input[pygame.K_UP] and playerRect.y >= speed:
     playerRect.y -= speed
   if input[pygame.K_DOWN] and playerRect.y <= (height - speed - playerImg.get_height()):
@@ -131,7 +135,24 @@ def move(input):
   if input[pygame.K_w] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingUp()
     amountOfBalls = amountOfBalls - 1
-
+  if input[pygame.K_q] and not clubWait:
+    if clubSelected > 0:
+      clubSelected -= 1
+      clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubWait = True
+    elif clubSelected == 0:
+      clubSelected = 2
+      clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubWait = True
+  if input[pygame.K_e] and not clubWait:
+    if clubSelected < 2:
+      clubSelected += 1
+      clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubWait = True
+    elif clubSelected == 2:
+      clubSelected = 0
+      clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubWait = True
 
 def spawnBallMovingRight():
   global ballAlive
@@ -215,9 +236,11 @@ while not started:
   DISPLAYSURF.blit(startMenuImg, (0, 0))
   DISPLAYSURF.blit(enemyImg, enemyRect)
 
-  drawMessage("Press G to start!", width/2, 500, 50)
+  drawMessage("Press space to start!", width/2, 500, 50)
   drawTitle("GOLFMANIA", width/2, 250)
   drawMessage("Use arrow keys to move", width/2, 600, 30)
+  drawMessage("Use W, A, S & D to shoot", width/2, 650, 30)
+  drawMessage("Use Q or E to switch golfclubs", width/2, 700, 30)
 
   enemyRect.x += enemySpeed 
   if enemyRect.x > width - enemyImg.get_width() and (randint(1, 1000) == 1 or tick % 1000 == 0):
@@ -228,7 +251,7 @@ while not started:
     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
       pygame.quit()
       sys.exit()
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
       started = True
       pygame.mixer.music.stop()
       pygame.mixer.music.unload()
@@ -257,6 +280,8 @@ while started:
   ballClock = 0
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
+  clubWait = False
+  clubClock = 0
 
   while alive:
     drawBG(0, 0, width, height)
@@ -295,7 +320,7 @@ while started:
       ballRect.x += ballSpeed[0]
       ballRect.y += ballSpeed[1]
       DISPLAYSURF.blit(ballImg, ballRect)
-    elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0\):
+    elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
       ballAlive = False
 
     if playerRect.colliderect(ballMachineRect) and tick > ballClock:
@@ -305,11 +330,7 @@ while started:
     if tick < ballClock - 500:
       drawMessage("You got new ballz!", width/2, height/2, 90)
 
-    drawMessage("balls: " + str(amountOfBalls), width - 50, height - 50, 20)
-
-    
-
-   
+    drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
@@ -321,13 +342,15 @@ while started:
     elif oldManRect.y < playerRect.x:
       oldManRect.y = oldManRect.y + oldManSpeed
 
-
-    pygame.time.wait(10)
+    if clubWait == True and clubClock <= 100:
+      clubClock += 1
+    elif clubClock > 100:
+      clubWait = False
 
     DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
 
     if oldManAlive == True:
-      DISPLAYSURF.blit(oldManImg, oldManRect)
+      ENEMYSURF.blit(oldManImg, oldManRect)
     if oldManAlive == False and enemyAlive == False:
       DISPLAYSURF.blit(holeImg, holeSpriteRect)
     
@@ -339,6 +362,7 @@ while started:
 
     DISPLAYSURF.blit(playerImg, playerRect)
 
+    pygame.time.wait(10)
     pygame.display.update()
     tick += 1
 
@@ -356,7 +380,7 @@ while started:
       if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
         pygame.quit()
         sys.exit()
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
         alive = True
     
     pygame.display.update()
