@@ -319,7 +319,7 @@ while started:
     if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
       ballRect.x += ballSpeed[0]
       ballRect.y += ballSpeed[1]
-      DISPLAYSURF.blit(ballImg, ballRect)
+      DISPLAYSURF.blit (ballImg, ballRect)
     elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
       ballAlive = False
 
