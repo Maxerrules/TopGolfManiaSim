@@ -120,27 +120,37 @@ def move(input):
   global clubSelected
   global clubImg
   global clubWait
+  global moved
+  global shot
 
   if input[pygame.K_UP] and playerRect.y >= speed:
     playerRect.y -= speed
+    moved = True
   if input[pygame.K_DOWN] and playerRect.y <= (height - speed - playerImg.get_height()):
     playerRect.y += speed
+    moved = True
   if input[pygame.K_RIGHT] and playerRect.x <= (width - speed - playerImg.get_width()):
     playerRect.x += speed
+    moved = True
   if input[pygame.K_LEFT] and playerRect.x >= speed:
     playerRect.x -= speed
+    moved = True
   if input[pygame.K_d] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingRight()
     amountOfBalls = amountOfBalls - 1
+    shot = True
   if input[pygame.K_a] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingLeft()
     amountOfBalls = amountOfBalls - 1
+    shot = True
   if input[pygame.K_s] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingDown()
     amountOfBalls = amountOfBalls - 1
+    shot = True
   if input[pygame.K_w] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingUp()
     amountOfBalls = amountOfBalls - 1
+    shot = True
   if input[pygame.K_q] and not clubWait:
     if clubSelected > 0:
       clubSelected -= 1
@@ -235,7 +245,7 @@ def drawTitle(message, x, y):
 
 pygame.mixer.music.load(startMenuMusic)
 pygame.mixer.music.play(-1)
-while not started:
+while started == 0:
 
   DISPLAYSURF.fill(transparent)
   startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
@@ -257,11 +267,12 @@ while not started:
       pygame.quit()
       sys.exit()
     if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-      started = True
+      started = 1
       pygame.mixer.music.stop()
       pygame.mixer.music.unload()
     if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-      inTutorial = True
+      started = 2
+      
   pygame.display.update()
   tick += 1
 
@@ -269,10 +280,93 @@ while not started:
 drawBG(0, 0, width, height)
 pygame.mixer.music.load(gameMusic)
 pygame.mixer.music.play(-1)
-while inTutorial:
-  drawMessage("Use arrow keys to move", width/2, height/2, 50)
+moved = False
+shot = False
+ballDispencerAlive = False
+ballMachineRect.x = width - 100
+ballMachineRect.y = 0
+enemyAlive = False
+ballsReplenishd = False
+enemyKilled = False
+holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
+while started == 2:
+  drawBG(0, 0, width, height)
 
-while started:
+  for event in pygame.event.get():   
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+      pygame.quit()
+      sys.exit()
+  keypress = pygame.key.get_pressed()
+  
+  move(keypress)
+
+
+
+  if not moved:
+    drawMessage("Use arrow keys to move", width/2, height/2, 80)
+  elif moved and not shot:
+    drawMessage("Use WASD to shoot", width/2, height/2, 80)
+  elif shot and amountOfBalls > 0 and not ballDispencerAlive:
+    drawMessage("You have " + str(amountOfBalls) + " balls", width/2, height/2, 80)
+    drawMessage("try to use them all", width/2, height/2 + 100, 80)
+  elif amountOfBalls == 0 and not enemyKilled:
+    drawMessage("to replenish your balls", width/2, height/2 - 100, 80)
+    drawMessage("walk over the ball dispencer", width/2, height/2, 80)
+    drawMessage("in the top right", width/2, height/2 + 100, 80)
+    ballDispencerAlive = True
+  elif ballDispencerAlive and ballsReplenishd and not enemyKilled:
+    drawMessage("shoot the enemy to kill them", width/2, height/2, 80)
+    drawMessage("but don't touch the enemy", width/2, height/2 + 100, 80)
+    enemyAlive = True
+  elif enemyKilled:
+    drawMessage("when all enemy's are dead", width/2, height/2 -100, 80)
+    drawMessage("shoot in the hole", width/2, height/2, 80)
+    drawMessage("to advance to the next wave", width/2, height/2 + 100, 80)
+    
+
+
+
+  if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
+    ballRect.x += ballSpeed[0]
+    ballRect.y += ballSpeed[1]
+    DISPLAYSURF.blit (ballImg, ballRect)
+  elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
+    ballAlive = False
+
+  drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
+
+  if playerRect.colliderect(ballMachineRect):
+    amountOfBalls = 5
+    ballsReplenishd = True
+
+  if ballRect.colliderect(enemyRect) and enemyAlive:
+    enemyAlive = False
+    enemyKilled = True
+    ballAlive = False
+
+  if ballRect.colliderect(holeRect) and enemyKilled:
+    started = 1
+
+
+  DISPLAYSURF.blit(playerImg, playerRect)
+
+  if enemyKilled:
+    DISPLAYSURF.blit(holeImg, holeSpriteRect)
+
+  if enemyAlive:
+    DISPLAYSURF.blit(enemyImg,enemyRect)
+
+  if ballDispencerAlive:
+    DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
+
+  if ballAlive: 
+    DISPLAYSURF.blit(ballImg, ballRect)
+
+  pygame.time.wait(10)
+  pygame.display.update()
+
+
+while started == 1:
 
   enemyRect.y = 250
   enemyRect.x = 0
@@ -293,6 +387,7 @@ while started:
   golfKarRect.x = 600
   golfKarRect.y = 600
   golfKarLives = 3
+  amountOfBalls = 5
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
   clubWait = False
