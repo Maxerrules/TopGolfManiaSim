@@ -28,7 +28,7 @@ startMenuMusic = "golfmania startmenu music.mp3"
 gameMusic = "Golf game song.mp3"
 youDed = "you ded.mp3"
 
-speed = 4
+speed = 5
 enemySpeed = 2
 
 alive = True
@@ -65,7 +65,7 @@ ballSpeed = 3, 3
 ballMovementSpeed = 5
 amountOfBalls = 5
 
-ballMachineImgPath = "New Piskel.png"
+ballMachineImgPath = "Golfballenmachine.png"
 ballMachineimg = pygame.image.load(ballMachineImgPath).convert_alpha()
 ballMachineRect = ballMachineimg.get_rect()
 
@@ -96,6 +96,12 @@ oldManRect.x = 500
 oldManRect.y = 500
 oldManAlive = True
 oldManSpeed = 1
+
+golfKarImgPath = "golfkar.png"
+golfKarImg = pygame.image.load(golfKarImgPath).convert_alpha()
+golfKarRect = golfKarImg.get_rect()
+golfKarAlive = True
+golfKarSpeed = 3
 
 pygame.display.set_caption("Golfrogue")
 
@@ -255,6 +261,10 @@ while started:
   ballMachineRect.x = width - 100
   ballMachineRect.y = 0
   ballClock = 0
+  golfKarAlive = True
+  golfKarRect.x = 600
+  golfKarRect.y = 600
+  golfKarLives = 3
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
 
@@ -272,12 +282,13 @@ while started:
         pygame.quit()
         sys.exit()      
 
-    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True):
+    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True) or (playerRect.colliderect(golfKarRect) and golfKarAlive == True):
       alive = False
       ballAlive = False
       enemyAlive = False
       oldManAlive = False
-    elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False:
+      golfKarAlive = False
+    elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False and not golfKarAlive:
       level = level+1 
       ballAlive = False
     elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
@@ -288,6 +299,13 @@ while started:
       oldManAlive = False
       oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
       ballAlive = False
+    elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
+      golfKarLives = golfKarLives - 1
+      ballAlive = False
+
+    if golfKarLives == 0:
+      golfKarAlive = False
+
 
     enemyRect.x += enemySpeed
  
@@ -321,10 +339,22 @@ while started:
     elif oldManRect.y < playerRect.x:
       oldManRect.y = oldManRect.y + oldManSpeed
 
+    if golfKarRect.x > playerRect.x:
+      golfKarRect.x = golfKarRect.x - golfKarSpeed
+    if golfKarRect.x < playerRect.x:
+      golfKarRect.x = golfKarRect.x + golfKarSpeed
+
+    if golfKarRect.y > playerRect.y:
+      golfKarRect.y = golfKarRect.y - golfKarSpeed
+    if golfKarRect.y < playerRect.y:
+      golfKarRect.y = golfKarRect.y + golfKarSpeed
 
     pygame.time.wait(10)
 
     DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
+
+    if golfKarAlive:
+      DISPLAYSURF.blit(golfKarImg, golfKarRect)
 
     if oldManAlive == True:
       DISPLAYSURF.blit(oldManImg, oldManRect)
