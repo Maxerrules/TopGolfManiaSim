@@ -14,6 +14,8 @@ BGSURF = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 width = DISPLAYSURF.get_width()
 height = DISPLAYSURF.get_height()
 transparent = (0, 0, 0, 100)
+darkGray = (20, 20, 20, 0)
+darkGreen = (15, 55, 10, 0)
 terrains = ["fairway", "rough", "green", "water", "bunker", "hole", "teebox"]
 
 started = False
@@ -61,16 +63,24 @@ ballRect = ballImg.get_rect()
 ballAlive = False
 ballSpeed = 3, 3
 ballMovementSpeed = 5
+amountOfBalls = 5
+
+ballMachineImgPath = "New Piskel.png"
+ballMachineimg = pygame.image.load(ballMachineImgPath).convert_alpha()
+ballMachineRect = ballMachineimg.get_rect()
+
+
 
 club1ImgPath = "golfClub.png"
 
 clubImg = pygame.image.load(club1ImgPath).convert_alpha()
 clubRect = clubImg.get_rect()
-clubRect.x, clubRect.y = width - clubImg.get_width() - 20, 20
+clubRect.x, clubRect.y = 20, height - clubImg.get_height() - 20
+clubBGRect = pygame.Rect(clubRect.x - 10, clubRect.y - 10, clubRect.width + 20, clubRect.height + 20)
 
 holeImgPath = "hole.png"
 holeImg = pygame.image.load(holeImgPath).convert_alpha()
-holeRect = holeImg.get_rect()
+holeSpriteRect = holeImg.get_rect()
 
 enemyImgPath = "Grassmaaier.png"
 enemyImg = pygame.image.load(enemyImgPath).convert_alpha()
@@ -85,7 +95,7 @@ oldManRect = oldManImg.get_rect()
 oldManRect.x = 500
 oldManRect.y = 500
 oldManAlive = True
-oldManSpeed = 2
+oldManSpeed = 1
 
 pygame.display.set_caption("Golfrogue")
 
@@ -99,7 +109,8 @@ def move(input):
   """
   global playerRect
   global speed
-
+  global amountOfBalls
+  
   if input[pygame.K_UP] and playerRect.y >= speed:
     playerRect.y -= speed
   if input[pygame.K_DOWN] and playerRect.y <= (height - speed - playerImg.get_height()):
@@ -108,54 +119,50 @@ def move(input):
     playerRect.x += speed
   if input[pygame.K_LEFT] and playerRect.x >= speed:
     playerRect.x -= speed
-  if input[pygame.K_d] and not ballAlive:
+  if input[pygame.K_d] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingRight()
-  if input[pygame.K_a] and not ballAlive:
+    amountOfBalls = amountOfBalls - 1
+  if input[pygame.K_a] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingLeft()
-  if input[pygame.K_s] and not ballAlive:
+    amountOfBalls = amountOfBalls - 1
+  if input[pygame.K_s] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingDown()
-  if input[pygame.K_w] and not ballAlive:
+    amountOfBalls = amountOfBalls - 1
+  if input[pygame.K_w] and not ballAlive and amountOfBalls > 0:
     spawnBallMovingUp()
+    amountOfBalls = amountOfBalls - 1
 
 
 def spawnBallMovingRight():
-
-  
   global ballAlive
   global ballSpeed
 
   ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y
+  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y + 40
   ballSpeed = ballMovementSpeed, 0
 
 def spawnBallMovingLeft():
-
-  
   global ballAlive
   global ballSpeed
 
   ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x - 5, playerRect.y
+  ballRect.x, ballRect.y = playerRect.x - 5, playerRect.y + 40
   ballSpeed = -ballMovementSpeed, 0
 
 def spawnBallMovingUp():
-
-  
   global ballAlive
   global ballSpeed
 
   ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x, playerRect.y - 5
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y
   ballSpeed = 0, -ballMovementSpeed
 
 def spawnBallMovingDown():
-
-  
   global ballAlive
   global ballSpeed
 
   ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x, playerRect.y + 5
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y + 20
   ballSpeed = 0, ballMovementSpeed
 
 def drawBG(x, y, width, height):
@@ -168,8 +175,8 @@ def drawBG(x, y, width, height):
   :return: None
   """
   BGimgCode = None
-  for i in range(0, int(width/100)):
-    for j in range(0, int(height/100)):
+  for i in range(0, int(width/100) + 1):
+    for j in range(0, int(height/100) + 1):
       BGimgCode = BGmap[i][j]
       if BGimgCode == 1:
         BGimg = FairwayImg
@@ -235,8 +242,9 @@ while started:
 
   enemyRect.y = 250
   enemyRect.x = 0
-  holeRect.x = 1200
-  holeRect.y = height/2
+  holeSpriteRect.x = 1200
+  holeSpriteRect.y = height/2
+  holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
   playerRect.y = 0
   playerRect.x = 0
   enemyAlive = True
@@ -244,6 +252,9 @@ while started:
   oldManRect.x = 500
   oldManRect.y = 500
   oldManAlive = True
+  ballMachineRect.x = width - 100
+  ballMachineRect.y = 0
+  ballClock = 0
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
 
@@ -286,7 +297,19 @@ while started:
       DISPLAYSURF.blit(ballImg, ballRect)
     elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0\):
       ballAlive = False
-      
+
+    if playerRect.colliderect(ballMachineRect) and tick > ballClock:
+      amountOfBalls = 5
+      ballClock = tick + 600
+    
+    if tick < ballClock - 500:
+      drawMessage("You got new ballz!", width/2, height/2, 90)
+
+    drawMessage("balls: " + str(amountOfBalls), width - 50, height - 50, 20)
+
+    
+
+   
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
@@ -300,18 +323,25 @@ while started:
 
 
     pygame.time.wait(10)
+
+    DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
+
     if oldManAlive == True:
       DISPLAYSURF.blit(oldManImg, oldManRect)
     if oldManAlive == False and enemyAlive == False:
-      DISPLAYSURF.blit(holeImg, holeRect)
+      DISPLAYSURF.blit(holeImg, holeSpriteRect)
+    
+    pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
     DISPLAYSURF.blit(clubImg, clubRect)
 
     if enemyAlive == True:
       ENEMYSURF.blit(enemyImg, enemyRect)
 
     DISPLAYSURF.blit(playerImg, playerRect)
+
     pygame.display.update()
     tick += 1
+
 
   pygame.mixer.music.load(youDed)
   pygame.mixer.music.play(-1)
@@ -320,7 +350,7 @@ while started:
     startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
     DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-    drawMessage("Press G to restart!", width/2, 600, 50)
+    drawMessage("Press space to restart", width/2, 600, 30)
     drawTitle("You Died", width/2, 300)
     for event in pygame.event.get():   
       if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
