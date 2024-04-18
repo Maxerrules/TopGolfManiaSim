@@ -244,9 +244,8 @@ while not started:
 
   drawMessage("Press space to start!", width/2, 500, 50)
   drawTitle("GOLFMANIA", width/2, 250)
-  drawMessage("Use arrow keys to move", width/2, 600, 30)
-  drawMessage("Use W, A, S & D to shoot", width/2, 650, 30)
-  drawMessage("Use Q or E to switch golfclubs", width/2, 700, 30)
+  drawMessage("Press t for tutorial!", width/2, 600, 30)
+
 
   enemyRect.x += enemySpeed 
   if enemyRect.x > width - enemyImg.get_width() and (randint(1, 1000) == 1 or tick % 1000 == 0):
@@ -261,12 +260,18 @@ while not started:
       started = True
       pygame.mixer.music.stop()
       pygame.mixer.music.unload()
-  
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+      inTutorial = True
   pygame.display.update()
   tick += 1
 
 
 drawBG(0, 0, width, height)
+pygame.mixer.music.load(gameMusic)
+pygame.mixer.music.play(-1)
+while inTutorial:
+  drawMessage("Use arrow keys to move", width/2, height/2, 50)
+
 while started:
 
   enemyRect.y = 250
@@ -375,6 +380,9 @@ while started:
       clubClock += 1
     elif clubClock > 100:
       clubWait = False
+
+    if amountOfBalls == 0:
+      drawMessage("You got no ballz!", width/2, height/2, 50)
     pygame.time.wait(10)
 
     DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
