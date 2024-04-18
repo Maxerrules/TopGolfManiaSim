@@ -26,7 +26,7 @@ startMenuMusic = "golfmania startmenu music.mp3"
 gameMusic = "Golf game song.mp3"
 youDed = "you ded.mp3"
 
-speed = 3
+speed = 4
 enemySpeed = 2
 
 alive = True
@@ -41,21 +41,26 @@ playerRect = playerImg.get_rect()
 
 FairwayImgPath = "Fairway.png"
 FairwayImg = pygame.image.load(FairwayImgPath).convert_alpha()
+fairwayRect = FairwayImg.get_rect()
 
 RoughImgPath = "Rough.png"
 RoughImg = pygame.image.load(RoughImgPath).convert_alpha()
+RoughRect = RoughImg.get_rect()
 
 GreenImgPath = "groem.png"
 GreenImg = pygame.image.load(GreenImgPath).convert_alpha()
+GreenRect = GreenImg.get_rect()
 
 WaterImgPath = "waderr.png"
 WaterImg = pygame.image.load(WaterImgPath).convert_alpha()
+WaterRect = WaterImg.get_rect()
 
 ballImgPath = "ball.png"
 ballImg = pygame.image.load(ballImgPath).convert_alpha()
 ballRect = ballImg.get_rect()
 ballAlive = False
 ballSpeed = 3, 3
+ballMovementSpeed = 5
 
 club1ImgPath = "golfClub.png"
 
@@ -73,6 +78,14 @@ enemyImg = pygame.transform.flip(enemyImg, True, False)
 enemyRect= enemyImg.get_rect()
 enemyRect.y = height - 100
 enemyRect.x = 0 - enemyRect.width
+
+oldManImgPath = "oldMan.png"
+oldManImg = pygame.image.load(oldManImgPath).convert_alpha()
+oldManRect = oldManImg.get_rect()
+oldManRect.x = 500
+oldManRect.y = 500
+oldManAlive = True
+oldManSpeed = 2
 
 pygame.display.set_caption("Golfrogue")
 
@@ -95,8 +108,55 @@ def move(input):
     playerRect.x += speed
   if input[pygame.K_LEFT] and playerRect.x >= speed:
     playerRect.x -= speed
-  if input[pygame.K_SPACE] and not ballAlive:
-    spawnBall()
+  if input[pygame.K_d] and not ballAlive:
+    spawnBallMovingRight()
+  if input[pygame.K_a] and not ballAlive:
+    spawnBallMovingLeft()
+  if input[pygame.K_s] and not ballAlive:
+    spawnBallMovingDown()
+  if input[pygame.K_w] and not ballAlive:
+    spawnBallMovingUp()
+
+
+def spawnBallMovingRight():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y
+  ballSpeed = ballMovementSpeed, 0
+
+def spawnBallMovingLeft():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x - 5, playerRect.y
+  ballSpeed = -ballMovementSpeed, 0
+
+def spawnBallMovingUp():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y - 5
+  ballSpeed = 0, -ballMovementSpeed
+
+def spawnBallMovingDown():
+
+  
+  global ballAlive
+  global ballSpeed
+
+  ballAlive = True
+  ballRect.x, ballRect.y = playerRect.x, playerRect.y + 5
+  ballSpeed = 0, ballMovementSpeed
 
 def drawBG(x, y, width, height):
   """
@@ -121,13 +181,7 @@ def drawBG(x, y, width, height):
         BGimg = RoughImg
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
 
-def spawnBall():
-  global ballAlive
-  global ballSpeed
 
-  ballAlive = True
-  ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y + 5
-  ballSpeed = 2, 2
 
 def text_object(text, font):
   textSurface = font.render(text, True, (0, 0, 0))
@@ -187,6 +241,9 @@ while started:
   playerRect.x = 0
   enemyAlive = True
   level = 1
+  oldManRect.x = 500
+  oldManRect.y = 500
+  oldManAlive = True
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
 
@@ -204,34 +261,49 @@ while started:
         pygame.quit()
         sys.exit()      
 
-    if playerRect.colliderect(enemyRect):
+    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True):
       alive = False
       ballAlive = False
       enemyAlive = False
-    elif ballRect.colliderect(holeRect) and enemyAlive == False:
+      oldManAlive = False
+    elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False:
       level = level+1 
       ballAlive = False
-    elif ballRect.colliderect(enemyRect):
+    elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
       enemyAlive = False
       enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
+    elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
+      oldManAlive = False
+      oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
+      ballAlive = False
 
     enemyRect.x += enemySpeed
-
-    if ballAlive and ballRect.x < width and ballRect.y < height:
+ 
+    if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
       ballRect.x += ballSpeed[0]
       ballRect.y += ballSpeed[1]
       DISPLAYSURF.blit(ballImg, ballRect)
-    elif ballAlive and (ballRect.x >= width or ballRect.y >= height):
+    elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
       ballAlive = False
+      
 
-    if alive == False:
-      print("========== GAME OVER ==========")
+    if oldManRect.x > playerRect.x:
+      oldManRect.x = oldManRect.x - oldManSpeed
+    elif oldManRect.x < playerRect.x:
+      oldManRect.x = oldManRect.x + oldManSpeed
+    
+    if oldManRect.y > playerRect.y:
+      oldManRect.y = oldManRect.y - oldManSpeed
+    elif oldManRect.y < playerRect.x:
+      oldManRect.y = oldManRect.y + oldManSpeed
 
 
     pygame.time.wait(10)
-    
-    DISPLAYSURF.blit(holeImg, holeRect)
+    if oldManAlive == True:
+      DISPLAYSURF.blit(oldManImg, oldManRect)
+    if oldManAlive == False and enemyAlive == False:
+      DISPLAYSURF.blit(holeImg, holeRect)
     DISPLAYSURF.blit(clubImg, clubRect)
 
     if enemyAlive == True:
@@ -248,7 +320,7 @@ while started:
     startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
     DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-    drawMessage("Press G to restart", width/2, 600, 20)
+    drawMessage("Press space to restart", width/2, 600)
     drawTitle("You Died", width/2, 300)
     for event in pygame.event.get():   
       if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
