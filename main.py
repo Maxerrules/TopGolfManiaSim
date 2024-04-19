@@ -509,6 +509,18 @@ while started == 1:
       enemySpeed = enemySpeed + 1
       oldManSpeed = oldManSpeed + 1
       leveledUp = True
+    if level == 3 and not leveledUp:
+      oldManMaxLives += oldManMaxLives
+      enemySpeed += enemySpeed
+      leveledUp = True
+    if level == 4 and not leveledUp:
+      oldManSpeed += oldManSpeed
+      golfKarMaxLives += golfKarMaxLives
+      leveledUp = True
+    if level == 5 and not leveledUp:
+      enemyMaxLives += enemyMaxLives
+      enemySpeed += enemySpeed
+      leveledUp = True
 
     
     if clubWait == True and clubClock <= 10:
