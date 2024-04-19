@@ -43,19 +43,18 @@ playerRect = playerImg.get_rect()
 
 FairwayImgPath = "Fairway.png"
 FairwayImg = pygame.image.load(FairwayImgPath).convert_alpha()
-fairwayRect = FairwayImg.get_rect()
 
 RoughImgPath = "Rough.png"
 RoughImg = pygame.image.load(RoughImgPath).convert_alpha()
-RoughRect = RoughImg.get_rect()
 
 GreenImgPath = "groem.png"
 GreenImg = pygame.image.load(GreenImgPath).convert_alpha()
-GreenRect = GreenImg.get_rect()
 
 WaterImgPath = "waderr.png"
 WaterImg = pygame.image.load(WaterImgPath).convert_alpha()
-WaterRect = WaterImg.get_rect()
+
+SandImgPath = "samd.png"
+SandImg = pygame.image.load(SandImgPath).convert_alpha()
 
 ballImgPath = "ball.png"
 ballImg = pygame.image.load(ballImgPath).convert_alpha()
@@ -120,6 +119,7 @@ def move(input):
   global clubSelected
   global clubImg
   global clubWait
+  global clubClock
   global moved
   global shot
 
@@ -155,19 +155,23 @@ def move(input):
     if clubSelected > 0:
       clubSelected -= 1
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubClock = 0
       clubWait = True
     elif clubSelected == 0:
       clubSelected = 2
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubClock = 0
       clubWait = True
   if input[pygame.K_e] and not clubWait:
     if clubSelected < 2:
       clubSelected += 1
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubClock = 0
       clubWait = True
     elif clubSelected == 2:
       clubSelected = 0
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
+      clubClock = 0
       clubWait = True
 
 def spawnBallMovingRight():
@@ -221,6 +225,10 @@ def drawBG(x, y, width, height):
         BGimg = RoughImg
       elif BGimgCode == 3:
         BGimg = GreenImg
+      elif BGimgCode == 4:
+        BGimg = SandImg
+      elif BGimgCode == 5:
+        BGimg = WaterImg
       else:
         BGimg = RoughImg
       BGSURF.blit(BGimg, (x+i*100, y+j*100))
@@ -484,9 +492,9 @@ while started == 1:
       golfKarRect.y = golfKarRect.y + golfKarSpeed
 
     
-    if clubWait == True and clubClock <= 100:
+    if clubWait == True and clubClock <= 10:
       clubClock += 1
-    elif clubClock > 100:
+    elif clubClock > 10:
       clubWait = False
 
     if amountOfBalls == 0:
