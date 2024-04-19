@@ -243,6 +243,7 @@ def drawTitle(message, x, y):
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
+
 pygame.mixer.music.load(startMenuMusic)
 pygame.mixer.music.play(-1)
 while started == 0:
@@ -366,10 +367,12 @@ while started == 2:
   pygame.display.update()
 
 
+
+
 while started == 1:
 
-  enemyRect.y = 250
-  enemyRect.x = 0
+  enemyRect.y = randint(0, height)
+  enemyRect.x = randint(0, width)
   holeSpriteRect.x = 1200
   holeSpriteRect.y = height/2
   holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
@@ -377,21 +380,21 @@ while started == 1:
   playerRect.x = 0
   enemyAlive = True
   level = 1
-  oldManRect.x = 500
-  oldManRect.y = 500
+  oldManRect.x = randint(0, width)
+  oldManRect.y = randint(0, height)
   oldManAlive = True
   ballMachineRect.x = width - 100
   ballMachineRect.y = 0
   ballClock = 0
   golfKarAlive = True
-  golfKarRect.x = 600
-  golfKarRect.y = 600
-  golfKarLives = 3
+  golfKarRect.x = randint(0, width)
+  golfKarRect.y = randint(0, height)
+  golfKarLives = 5
   amountOfBalls = 5
-  pygame.mixer.music.load(gameMusic)
-  pygame.mixer.music.play(-1)
   clubWait = False
   clubClock = 0
+  pygame.mixer.music.load(gameMusic)
+  pygame.mixer.music.play(-1)
 
   while alive:
     drawBG(0, 0, width, height)
@@ -416,6 +419,16 @@ while started == 1:
     elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False and not golfKarAlive:
       level = level+1 
       ballAlive = False
+      enemyAlive = True
+      golfKarAlive = True
+      oldManAlive = True
+      golfKarRect.x = randint(0, width)
+      golfKarRect.y = randint(0, height)
+      oldManRect.x = randint(0, width)
+      oldManRect.y = randint(0, height)
+      enemyRect.x = randint(0, width)
+      enemyRect.y = randint(0, height)
+      golfKarLives = 5
     elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
       enemyAlive = False
       enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
@@ -487,7 +500,7 @@ while started == 1:
 
     if oldManAlive == True:
       ENEMYSURF.blit(oldManImg, oldManRect)
-    if oldManAlive == False and enemyAlive == False:
+    if oldManAlive == False and enemyAlive == False and not golfKarAlive:
       DISPLAYSURF.blit(holeImg, holeSpriteRect)
     
     pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
