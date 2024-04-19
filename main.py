@@ -104,13 +104,25 @@ golfKarAlive = True
 golfKarSpeed = 3
 
 bossImgPath = "boss.png"
-bossImg = pygame.image.load(bossImgPath).convert_alpha
+bossImg = pygame.image.load(bossImgPath).convert_alpha()
 bossRect = bossImg.get_rect()
 bossLives = 20
+bossSpeed = 4
 
 bossStoneLeftImgPath = "stone.png"
-bossStoneLeftImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha
+bossStoneLeftImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
 bossStoneLeftRect = bossStoneLeftImg.get_rect()
+
+bossStoneRightImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
+bossStoneRightRect = bossStoneRightImg.get_rect()
+
+bossStoneUpImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
+bossStoneUpRect = bossStoneUpImg.get_rect()
+
+bossStoneDownImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
+bossStoneDownRect = bossStoneDownImg.get_rect()
+
+
 
 
 
@@ -400,7 +412,7 @@ while started == 1:
   playerRect.y = 0
   playerRect.x = 0
   enemyAlive = True
-  level = 1
+  level = 9
   oldManRect.x = randint(0, width)
   oldManRect.y = randint(0, height)
   oldManAlive = True
@@ -421,6 +433,7 @@ while started == 1:
   golfKarMaxLives = 5
   bossAlive = False
   leveledUp = True
+  dead = False
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
 
@@ -438,12 +451,13 @@ while started == 1:
         pygame.quit()
         sys.exit()      
 
-    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True) or (playerRect.colliderect(golfKarRect) and golfKarAlive == True):
+    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True) or (playerRect.colliderect(golfKarRect) and golfKarAlive == True) or (playerRect.colliderect(bossRect) and bossAlive):
       alive = False
       ballAlive = False
       enemyAlive = False
       oldManAlive = False
       golfKarAlive = False
+      dead = True
     elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False and not golfKarAlive:
       level = level+1 
       leveledUp = False
@@ -470,6 +484,10 @@ while started == 1:
     elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
       golfKarLives = golfKarLives - 1
       ballAlive = False
+    elif ballRect.colliderect(bossRect) and bossAlive and ballAlive:
+      bossLives = bossLives - 1
+      ballAlive = False
+
 
     if golfKarLives == 0:
       golfKarAlive = False
@@ -477,6 +495,8 @@ while started == 1:
       oldManAlive = False
     if enemyLives == 0:
       enemyAlive = False
+    if bossLives == 0:
+      bossAlive = False
 
 
     enemyRect.x += enemySpeed
@@ -499,7 +519,7 @@ while started == 1:
     if level < 9:
       drawMessage("Wave: " + str(level), width - 80, height - 60, 30)
     else:
-      drawMessage("Bossfight", width - 50, height - 80, 30)
+      drawMessage("Bossfight", width - 80, height - 60, 30)
 
 
     if oldManRect.x > playerRect.x:
@@ -521,6 +541,19 @@ while started == 1:
       golfKarRect.y = golfKarRect.y - golfKarSpeed
     if golfKarRect.y < playerRect.y:
       golfKarRect.y = golfKarRect.y + golfKarSpeed
+
+
+
+    if bossRect.x > playerRect.x:
+      bossRect.x = bossRect.x - bossSpeed
+    if bossRect.x < playerRect.x:
+      bossRect.x = bossRect.x + bossSpeed
+
+    if bossRect.y > playerRect.y:
+      bossRect.y = bossRect.y - bossSpeed
+    if bossRect.y < bossRect.y:
+      bossRect.y = bossRect.y + bossSpeed
+
 
     if level == 2 and not leveledUp:
       enemySpeed = enemySpeed + 1
@@ -577,6 +610,9 @@ while started == 1:
       enemyAlive = False
       oldManAlive = False
       bossAlive = True
+    if level == 10 and not leveledUp:
+      alive = False
+      dead = False
     
 
     
@@ -596,8 +632,12 @@ while started == 1:
 
     if oldManAlive == True:
       ENEMYSURF.blit(oldManImg, oldManRect)
-    if oldManAlive == False and enemyAlive == False and not golfKarAlive:
+
+    if oldManAlive == False and enemyAlive == False and not golfKarAlive and not bossAlive:
       DISPLAYSURF.blit(holeImg, holeSpriteRect)
+    
+    if bossAlive:
+      DISPLAYSURF.blit(bossImg, bossRect)
     
     pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
     DISPLAYSURF.blit(clubImg, clubRect)
@@ -612,20 +652,37 @@ while started == 1:
     tick += 1
 
 
-  pygame.mixer.music.load(youDed)
-  pygame.mixer.music.play(-1)
+  
   while not alive:
-    tick = 0
-    startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
-    DISPLAYSURF.blit(startMenuImg, (0, 0))
+    pygame.mixer.music.load(youDed)
+    pygame.mixer.music.play(-1)
+    while dead:
+      tick = 0
+      startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
+      DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-    drawMessage("Press space to restart", width/2, 600, 30)
-    drawTitle("You Died", width/2, 300)
-    for event in pygame.event.get():   
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-        pygame.quit()
-        sys.exit()
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-        alive = True
-    
-    pygame.display.update()
+      drawMessage("Press space to restart", width/2, 600, 30)
+      drawTitle("You Died", width/2, 300)
+      for event in pygame.event.get():   
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+          pygame.quit()
+          sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+          alive = True
+      
+      pygame.display.update()
+    while not dead:
+      tick = 0
+      startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
+      DISPLAYSURF.blit(startMenuImg, (0, 0))
+
+      drawMessage("Press space to restart", width/2, 600, 30)
+      drawTitle("You Won!", width/2, 300)
+      for event in pygame.event.get():   
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+          pygame.quit()
+          sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+          alive = True
+      
+      pygame.display.update()
