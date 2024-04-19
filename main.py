@@ -343,7 +343,11 @@ while started == 2:
     ballAlive = False
 
   drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 30)
-  
+  if level < 9:
+    drawMessage("Wave: " + str(level), width - 50, height - 80, 30)
+  else:
+    drawMessage("Bossfight", width - 50, height - 80, 30)
+
 
   if playerRect.colliderect(ballMachineRect):
     amountOfBalls = 5
