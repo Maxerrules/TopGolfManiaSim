@@ -343,10 +343,7 @@ while started == 2:
     ballAlive = False
 
   drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 30)
-  if level < 9:
-    drawMessage("Wave: " + str(level), width - 50, height - 80, 30)
-  else:
-    drawMessage("Bossfight", width - 50, height - 80, 30)
+
 
 
   if playerRect.colliderect(ballMachineRect):
@@ -454,11 +451,9 @@ while started == 1:
       oldManLives = oldManMaxLives
 
     elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
-      enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
       enemyLives = enemyLives - 1
     elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
-      oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
       ballAlive = False
       oldManLives = oldManLives - 1
     elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
@@ -489,7 +484,12 @@ while started == 1:
     if tick < ballClock - 500:
       drawMessage("You got new ballz!", width/2, height/2, 90)
 
-    drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
+    drawMessage("Balls: " + str(amountOfBalls), width - 80, height - 30, 30)
+    if level < 9:
+      drawMessage("Wave: " + str(level), width - 80, height - 60, 30)
+    else:
+      drawMessage("Bossfight", width - 50, height - 80, 30)
+
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
@@ -515,31 +515,52 @@ while started == 1:
       enemySpeed = enemySpeed + 1
       oldManSpeed = oldManSpeed + 1
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 3 and not leveledUp:
-      oldManMaxLives = oldManMaxLives + 1
+      oldManMaxLives = 2
       enemySpeed = enemySpeed + 1
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 4 and not leveledUp:
       oldManSpeed = oldManSpeed + 1
-      golfKarMaxLives = golfKarMaxLives + 1
+      golfKarMaxLives = 6
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 5 and not leveledUp:
-      enemyMaxLives = enemyMaxLives + 1
+      enemyMaxLives = 2
       enemySpeed = enemySpeed + 1
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 6 and not leveledUp:
       oldManSpeed = oldManSpeed + 1
       golfKarSpeed = golfKarSpeed + 1
       speed = speed + 1
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 7 and not leveledUp:
-      golfKarMaxLives = golfKarMaxLives + 1
-      enemyMaxLives = enemyMaxLives + 1
+      golfKarMaxLives = 7
+      enemyMaxLives = 3
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 8 and not leveledUp:
-      enemyMaxLives = enemyMaxLives + 1
-      oldManMaxLives = oldManMaxLives + 1
+      enemyMaxLives = 4
+      oldManMaxLives = 3
       leveledUp = True
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
     if level == 9 and not leveledUp:
       golfKarAlive = False
       enemyAlive = False
