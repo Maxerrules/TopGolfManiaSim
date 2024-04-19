@@ -401,6 +401,12 @@ while started == 1:
   amountOfBalls = 5
   clubWait = False
   clubClock = 0
+  enemyLives = 1
+  oldManLives = 1
+  enemyMaxLives = 1
+  oldManMaxLives = 1
+  golfKarMaxLives = 5
+  leveledUp = True
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
 
@@ -426,6 +432,7 @@ while started == 1:
       golfKarAlive = False
     elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False and not golfKarAlive:
       level = level+1 
+      leveledUp = False
       ballAlive = False
       enemyAlive = True
       golfKarAlive = True
@@ -436,21 +443,28 @@ while started == 1:
       oldManRect.y = randint(0, height)
       enemyRect.x = randint(0, width)
       enemyRect.y = randint(0, height)
-      golfKarLives = 5
+      golfKarLives = golfKarMaxLives
+      enemyLives = enemyMaxLives
+      oldManLives = oldManMaxLives
+
     elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
-      enemyAlive = False
       enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
+      enemyLives = enemyLives - 1
     elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
-      oldManAlive = False
       oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
       ballAlive = False
+      oldManLives = oldManLives - 1
     elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
       golfKarLives = golfKarLives - 1
       ballAlive = False
 
     if golfKarLives == 0:
       golfKarAlive = False
+    if oldManLives == 0:
+      oldManAlive = False
+    if enemyLives == 0:
+      enemyAlive = False
 
 
     enemyRect.x += enemySpeed
@@ -490,6 +504,11 @@ while started == 1:
       golfKarRect.y = golfKarRect.y - golfKarSpeed
     if golfKarRect.y < playerRect.y:
       golfKarRect.y = golfKarRect.y + golfKarSpeed
+
+    if level == 2 and not leveledUp:
+      enemySpeed = enemySpeed + 1
+      oldManSpeed = oldManSpeed + 1
+      leveledUp = True
 
     
     if clubWait == True and clubClock <= 10:
