@@ -342,7 +342,8 @@ while started == 2:
   elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
     ballAlive = False
 
-  drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
+  drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 30)
+  
 
   if playerRect.colliderect(ballMachineRect):
     amountOfBalls = 5
@@ -406,6 +407,7 @@ while started == 1:
   enemyMaxLives = 1
   oldManMaxLives = 1
   golfKarMaxLives = 5
+  bossAlive = False
   leveledUp = True
   pygame.mixer.music.load(gameMusic)
   pygame.mixer.music.play(-1)
@@ -510,17 +512,36 @@ while started == 1:
       oldManSpeed = oldManSpeed + 1
       leveledUp = True
     if level == 3 and not leveledUp:
-      oldManMaxLives += oldManMaxLives
-      enemySpeed += enemySpeed
+      oldManMaxLives = oldManMaxLives + 1
+      enemySpeed = enemySpeed + 1
       leveledUp = True
     if level == 4 and not leveledUp:
-      oldManSpeed += oldManSpeed
-      golfKarMaxLives += golfKarMaxLives
+      oldManSpeed = oldManSpeed + 1
+      golfKarMaxLives = golfKarMaxLives + 1
       leveledUp = True
     if level == 5 and not leveledUp:
-      enemyMaxLives += enemyMaxLives
-      enemySpeed += enemySpeed
+      enemyMaxLives = enemyMaxLives + 1
+      enemySpeed = enemySpeed + 1
       leveledUp = True
+    if level == 6 and not leveledUp:
+      oldManSpeed = oldManSpeed + 1
+      golfKarSpeed = golfKarSpeed + 1
+      speed = speed + 1
+      leveledUp = True
+    if level == 7 and not leveledUp:
+      golfKarMaxLives = golfKarMaxLives + 1
+      enemyMaxLives = enemyMaxLives + 1
+      leveledUp = True
+    if level == 8 and not leveledUp:
+      enemyMaxLives = enemyMaxLives + 1
+      oldManMaxLives = oldManMaxLives + 1
+      leveledUp = True
+    if level == 9 and not leveledUp:
+      golfKarAlive = False
+      enemyAlive = False
+      oldManAlive = False
+      bossAlive = True
+    
 
     
     if clubWait == True and clubClock <= 10:
