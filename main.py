@@ -103,6 +103,17 @@ golfKarRect = golfKarImg.get_rect()
 golfKarAlive = True
 golfKarSpeed = 3
 
+bossImgPath = "boss.png"
+bossImg = pygame.image.load(bossImgPath).convert_alpha
+bossRect = bossImg.get_rect()
+bossLives = 20
+
+bossStoneLeftImgPath = "stone.png"
+bossStoneLeftImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha
+bossStoneLeftRect = bossStoneLeftImg.get_rect()
+
+
+
 pygame.display.set_caption("Golfrogue")
 
 #functions
