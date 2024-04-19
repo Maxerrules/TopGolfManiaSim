@@ -311,7 +311,7 @@ while started == 2:
     drawMessage("try to use them all", width/2, height/2 + 100, 80)
   elif amountOfBalls == 0 and not enemyKilled:
     drawMessage("to replenish your balls", width/2, height/2 - 100, 80)
-    drawMessage("walk over the ball dispencer", width/2, height/2, 80)
+    drawMessage("walk over the ball dispenser", width/2, height/2, 80)
     drawMessage("in the top right", width/2, height/2 + 100, 80)
     ballDispencerAlive = True
   elif ballDispencerAlive and ballsReplenishd and not enemyKilled:
