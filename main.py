@@ -412,7 +412,7 @@ while started == 1:
   playerRect.y = 0
   playerRect.x = 0
   enemyAlive = True
-  level = 9
+  level = 1
   oldManRect.x = randint(0, width)
   oldManRect.y = randint(0, height)
   oldManAlive = True
