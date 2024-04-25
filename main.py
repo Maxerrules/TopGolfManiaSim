@@ -437,6 +437,31 @@ while started == 1:
       enemyAlive = True
       golfKarAlive = True
       oldManAlive = True
+      if level == 2 and not leveledUp:
+        enemySpeed = enemySpeed + 1
+        oldManSpeed = oldManSpeed + 1
+        leveledUp = True
+      if level == 3 and not leveledUp:
+        oldManMaxLives += oldManMaxLives
+        enemySpeed += enemySpeed
+        leveledUp = True
+      if level == 4 and not leveledUp:
+        oldManSpeed += oldManSpeed
+        golfKarMaxLives += golfKarMaxLives
+        leveledUp = True
+      if level == 5 and not leveledUp:
+        enemyMaxLives += enemyMaxLives
+        enemySpeed += enemySpeed
+        leveledUp = True
+      if level > 5 and not leveledUp:
+        enemyMaxLives = enemyMaxLives + 1
+        oldManMaxLives = oldManMaxLives + 1
+        golfKarMaxLives = golfKarMaxLives + 1
+        enemySpeed += enemySpeed
+        oldManSpeed += oldManSpeed
+        golfKarSpeed += golfKarSpeed
+
+
       golfKarRect.x = randint(0, width)
       golfKarRect.y = randint(0, height)
       oldManRect.x = randint(0, width)
@@ -448,11 +473,9 @@ while started == 1:
       oldManLives = oldManMaxLives
 
     elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
-      enemyRect.x, enemyRect.y = -enemyRect.width, -enemyRect.y
       ballAlive = False
       enemyLives = enemyLives - 1
     elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
-      oldManRect.x, oldManRect.y = -oldManRect.width, -oldManRect.y
       ballAlive = False
       oldManLives = oldManLives - 1
     elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
@@ -504,23 +527,6 @@ while started == 1:
       golfKarRect.y = golfKarRect.y - golfKarSpeed
     if golfKarRect.y < playerRect.y:
       golfKarRect.y = golfKarRect.y + golfKarSpeed
-
-    if level == 2 and not leveledUp:
-      enemySpeed = enemySpeed + 1
-      oldManSpeed = oldManSpeed + 1
-      leveledUp = True
-    if level == 3 and not leveledUp:
-      oldManMaxLives += oldManMaxLives
-      enemySpeed += enemySpeed
-      leveledUp = True
-    if level == 4 and not leveledUp:
-      oldManSpeed += oldManSpeed
-      golfKarMaxLives += golfKarMaxLives
-      leveledUp = True
-    if level == 5 and not leveledUp:
-      enemyMaxLives += enemyMaxLives
-      enemySpeed += enemySpeed
-      leveledUp = True
 
     
     if clubWait == True and clubClock <= 10:
