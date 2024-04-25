@@ -62,7 +62,7 @@ ballRect = ballImg.get_rect()
 ballAlive = False
 ballSpeed = 3, 3
 ballMovementSpeed = 5
-ballRandomness = 5
+ballRandomness = 1
 amountOfBalls = 5
 
 ballMachineImgPath = "Golfballenmachine.png"
@@ -182,6 +182,8 @@ def switchClub(input):
   global ballRandomness
   global clubClock
   global clubImg
+  global clubSelected
+  global clubWait
 
   if input[pygame.K_q] and not clubWait:
     if clubSelected == 0:
@@ -194,14 +196,14 @@ def switchClub(input):
     elif clubSelected == 1:
       clubSelected = 0
       ballMovementSpeed = 5
-      ballRandomness = 5
+      ballRandomness = 1
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
     elif clubSelected == 2:
       clubSelected = 1
       ballMovementSpeed = 7
-      ballRandomness = 10
+      ballRandomness = 2
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
@@ -210,7 +212,7 @@ def switchClub(input):
     if clubSelected == 0:
       clubSelected = 1
       ballMovementSpeed = 7
-      ballRandomness = 10
+      ballRandomness = 2
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
@@ -224,7 +226,7 @@ def switchClub(input):
     elif clubSelected == 2:
       clubSelected = 0
       ballMovementSpeed = 5
-      ballRandomness = 5
+      ballRandomness = 1
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
@@ -236,7 +238,7 @@ def spawnBallMovingRight():
 
   ballAlive = True
   ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y + 40
-  ballSpeed = ballMovementSpeed, randint(-ballRandomness, ballRandomness)/10
+  ballSpeed = ballMovementSpeed, randint(-ballRandomness, ballRandomness)/50
 
 def spawnBallMovingLeft():
   global ballAlive
@@ -371,12 +373,12 @@ while started == 2:
 
   if not moved:
     drawMessage("Use arrow keys to move", width/2, height/2, 80)
-  elif moved and not switched:
+  elif moved and not shot:
     drawMessage("Use WASD to shoot", width/2, height/2, 80)
-  elif switched and not shot:
+  elif shot and not switched:
     drawMessage("Switch clubs with Q or E", width/2, height/2 - 50, 80)
     drawMessage("Faster clubs are less accurate", width/2, height/2 + 50, 80)
-  elif shot and amountOfBalls > 0 and not ballDispenserAlive:
+  elif switched and amountOfBalls > 0 and not ballDispenserAlive:
     drawMessage("You have " + str(amountOfBalls) + " balls", width/2, height/2, 80)
     drawMessage("try to use them all", width/2, height/2 + 100, 80)
   elif amountOfBalls == 0 and not enemyKilled:
@@ -405,7 +407,10 @@ while started == 2:
 
   drawMessage("Balls: " + str(amountOfBalls), width - 100, height - 50, 30)
 
-
+  if clubWait and clubClock <= 10:
+      clubClock += 1
+  elif clubClock > 10:
+    clubWait = False
 
   if playerRect.colliderect(ballMachineRect):
     amountOfBalls = 5
@@ -420,6 +425,8 @@ while started == 2:
     started = 1
     print("Main started")
 
+  pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
+  DISPLAYSURF.blit(clubImg, clubRect)
 
   DISPLAYSURF.blit(playerImg, playerRect)
 
@@ -450,7 +457,7 @@ while started == 1:
   playerRect.y = 0
   playerRect.x = 0
   enemyAlive = True
-  level = 8
+  level = 1
   oldManRect.x = randint(0, width)
   oldManRect.y = randint(0, height)
   oldManAlive = True
