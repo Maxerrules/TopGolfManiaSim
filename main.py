@@ -252,246 +252,92 @@ def drawTitle(message, x, y):
   DISPLAYSURF.blit(TextSurf, TextRect)
 
 
-pygame.mixer.music.load(startMenuMusic)
-pygame.mixer.music.play(-1)
-while started == 0:
 
-  DISPLAYSURF.fill(transparent)
-  startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
-  DISPLAYSURF.blit(startMenuImg, (0, 0))
-  DISPLAYSURF.blit(enemyImg, enemyRect)
-
-  drawMessage("Press space to start!", width/2, 500, 50)
-  drawTitle("GOLFMANIA", width/2, 250)
-  drawMessage("Press t for tutorial!", width/2, 600, 30)
-
-
-  enemyRect.x += enemySpeed 
-  if enemyRect.x > width - enemyImg.get_width() and (randint(1, 1000) == 1 or tick % 1000 == 0):
-    enemyRect.x = 0 - enemyRect.width
-    enemyRect.y = height - 100
-
-  for event in pygame.event.get():   
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-      pygame.quit()
-      sys.exit()
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-      started = 1
-      pygame.mixer.music.stop()
-      pygame.mixer.music.unload()
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-      started = 2
-      
-  pygame.display.update()
-  tick += 1
-
-
-drawBG(0, 0, width, height)
-pygame.mixer.music.load(gameMusic)
-pygame.mixer.music.play(-1)
-moved = False
-shot = False
-ballDispencerAlive = False
-ballMachineRect.x = width - 100
-ballMachineRect.y = 0
-enemyAlive = False
-ballsReplenishd = False
-enemyKilled = False
-holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
-while started == 2:
-  drawBG(0, 0, width, height)
-
-  for event in pygame.event.get():   
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-      pygame.quit()
-      sys.exit()
-  keypress = pygame.key.get_pressed()
-  
-  move(keypress)
-
-
-
-  if not moved:
-    drawMessage("Use arrow keys to move", width/2, height/2, 80)
-  elif moved and not shot:
-    drawMessage("Use WASD to shoot", width/2, height/2, 80)
-  elif shot and amountOfBalls > 0 and not ballDispencerAlive:
-    drawMessage("You have " + str(amountOfBalls) + " balls", width/2, height/2, 80)
-    drawMessage("try to use them all", width/2, height/2 + 100, 80)
-  elif amountOfBalls == 0 and not enemyKilled:
-    drawMessage("to replenish your balls", width/2, height/2 - 100, 80)
-    drawMessage("walk over the ball dispenser", width/2, height/2, 80)
-    drawMessage("in the top right", width/2, height/2 + 100, 80)
-    ballDispencerAlive = True
-  elif ballDispencerAlive and ballsReplenishd and not enemyKilled:
-    drawMessage("shoot the enemy to kill them", width/2, height/2, 80)
-    drawMessage("but don't touch the enemy", width/2, height/2 + 100, 80)
-    enemyAlive = True
-  elif enemyKilled:
-    drawMessage("when all enemy's are dead", width/2, height/2 -100, 80)
-    drawMessage("shoot in the hole", width/2, height/2, 80)
-    drawMessage("to advance to the next wave", width/2, height/2 + 100, 80)
-    
-
-
-
-  if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
-    ballRect.x += ballSpeed[0]
-    ballRect.y += ballSpeed[1]
-    DISPLAYSURF.blit (ballImg, ballRect)
-  elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
-    ballAlive = False
-
-  drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
-
-  if playerRect.colliderect(ballMachineRect):
-    amountOfBalls = 5
-    ballsReplenishd = True
-
-  if ballRect.colliderect(enemyRect) and enemyAlive:
-    enemyAlive = False
-    enemyKilled = True
-    ballAlive = False
-
-  if ballRect.colliderect(holeRect) and enemyKilled:
-    started = 1
-
-
-  DISPLAYSURF.blit(playerImg, playerRect)
-
-  if enemyKilled:
-    DISPLAYSURF.blit(holeImg, holeSpriteRect)
-
-  if enemyAlive:
-    DISPLAYSURF.blit(enemyImg,enemyRect)
-
-  if ballDispencerAlive:
-    DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
-
-  if ballAlive: 
-    DISPLAYSURF.blit(ballImg, ballRect)
-
-  pygame.time.wait(10)
-  pygame.display.update()
-
-
-
-
-while started == 1:
-
-  enemyRect.y = randint(0, height)
-  enemyRect.x = randint(0, width)
-  holeSpriteRect.x = 1200
-  holeSpriteRect.y = height/2
-  holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
-  playerRect.y = 0
-  playerRect.x = 0
-  enemyAlive = True
-  level = 1
-  oldManRect.x = randint(0, width)
-  oldManRect.y = randint(0, height)
-  oldManAlive = True
-  ballMachineRect.x = width - 100
-  ballMachineRect.y = 0
-  ballClock = 0
-  golfKarAlive = True
-  golfKarRect.x = randint(0, width)
-  golfKarRect.y = randint(0, height)
-  golfKarLives = 5
-  amountOfBalls = 5
-  clubWait = False
-  clubClock = 0
-  enemyLives = 1
-  oldManLives = 1
-  enemyMaxLives = 1
-  oldManMaxLives = 1
-  golfKarMaxLives = 5
-  leveledUp = True
-  pygame.mixer.music.load(gameMusic)
+while True:
+  pygame.mixer.music.load(startMenuMusic)
   pygame.mixer.music.play(-1)
+  while started == 0:
 
-  while alive:
-    drawBG(0, 0, width, height)
-    keypress = pygame.key.get_pressed()
-    move(keypress)
-    
-    if enemyRect.x > width - enemyImg.get_width():
-      enemyRect.x = 0
-      enemyRect.y = randint(0, height)
+    DISPLAYSURF.fill(transparent)
+    startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
+    DISPLAYSURF.blit(startMenuImg, (0, 0))
+    DISPLAYSURF.blit(enemyImg, enemyRect)
+
+    drawMessage("Press space to start!", width/2, 500, 50)
+    drawTitle("GOLFMANIA", width/2, 250)
+    drawMessage("Press t for tutorial!", width/2, 600, 30)
+
+
+    enemyRect.x += enemySpeed 
+    if enemyRect.x > width - enemyImg.get_width() and (randint(1, 1000) == 1 or tick % 1000 == 0):
+      enemyRect.x = 0 - enemyRect.width
+      enemyRect.y = height - 100
 
     for event in pygame.event.get():   
-      if event.type == QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
         pygame.quit()
-        sys.exit()      
+        sys.exit()
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        started = 1
+        pygame.mixer.music.stop()
+        pygame.mixer.music.unload()
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+        started = 2
+        
+    pygame.display.update()
+    tick += 1
 
-    if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True) or (playerRect.colliderect(golfKarRect) and golfKarAlive == True):
-      alive = False
-      ballAlive = False
-      enemyAlive = False
-      oldManAlive = False
-      golfKarAlive = False
-    elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False and not golfKarAlive:
-      level = level+1 
-      leveledUp = False
-      ballAlive = False
+
+  drawBG(0, 0, width, height)
+  pygame.mixer.music.load(gameMusic)
+  pygame.mixer.music.play(-1)
+  moved = False
+  shot = False
+  ballDispencerAlive = False
+  ballMachineRect.x = width - 100
+  ballMachineRect.y = 0
+  enemyAlive = False
+  ballsReplenishd = False
+  enemyKilled = False
+  amountOfBalls = 5
+  holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
+  while started == 2:
+    drawBG(0, 0, width, height)
+
+    for event in pygame.event.get():   
+      if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        pygame.quit()
+        sys.exit()
+    keypress = pygame.key.get_pressed()
+    
+    move(keypress)
+
+
+
+    if not moved:
+      drawMessage("Use arrow keys to move", width/2, height/2, 80)
+    elif moved and not shot:
+      drawMessage("Use WASD to shoot", width/2, height/2, 80)
+    elif shot and amountOfBalls > 0 and not ballDispencerAlive:
+      drawMessage("You have " + str(amountOfBalls) + " balls", width/2, height/2, 80)
+      drawMessage("try to use them all", width/2, height/2 + 100, 80)
+    elif amountOfBalls == 0 and not enemyKilled:
+      drawMessage("to replenish your balls", width/2, height/2 - 100, 80)
+      drawMessage("walk over the ball dispenser", width/2, height/2, 80)
+      drawMessage("in the top right", width/2, height/2 + 100, 80)
+      ballDispencerAlive = True
+    elif ballDispencerAlive and ballsReplenishd and not enemyKilled:
+      drawMessage("shoot the enemy to kill them", width/2, height/2, 80)
+      drawMessage("but don't touch the enemy", width/2, height/2 + 100, 80)
       enemyAlive = True
-      golfKarAlive = True
-      oldManAlive = True
-      if level == 2 and not leveledUp:
-        enemySpeed = enemySpeed + 1
-        oldManSpeed = oldManSpeed + 1
-        leveledUp = True
-      if level == 3 and not leveledUp:
-        oldManMaxLives += oldManMaxLives
-        enemySpeed += enemySpeed
-        leveledUp = True
-      if level == 4 and not leveledUp:
-        oldManSpeed += oldManSpeed
-        golfKarMaxLives += golfKarMaxLives
-        leveledUp = True
-      if level == 5 and not leveledUp:
-        enemyMaxLives += enemyMaxLives
-        enemySpeed += enemySpeed
-        leveledUp = True
-      if level > 5 and not leveledUp:
-        enemyMaxLives = enemyMaxLives + 1
-        oldManMaxLives = oldManMaxLives + 1
-        golfKarMaxLives = golfKarMaxLives + 1
-        enemySpeed += enemySpeed
-        oldManSpeed += oldManSpeed
-        golfKarSpeed += golfKarSpeed
+    elif enemyKilled:
+      drawMessage("when all enemy's are dead", width/2, height/2 -100, 80)
+      drawMessage("shoot in the hole", width/2, height/2, 80)
+      drawMessage("to advance to the next wave", width/2, height/2 + 100, 80)
+      
 
 
-      golfKarRect.x = randint(0, width)
-      golfKarRect.y = randint(0, height)
-      oldManRect.x = randint(0, width)
-      oldManRect.y = randint(0, height)
-      enemyRect.x = randint(0, width)
-      enemyRect.y = randint(0, height)
-      golfKarLives = golfKarMaxLives
-      enemyLives = enemyMaxLives
-      oldManLives = oldManMaxLives
 
-    elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
-      ballAlive = False
-      enemyLives = enemyLives - 1
-    elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
-      ballAlive = False
-      oldManLives = oldManLives - 1
-    elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
-      golfKarLives = golfKarLives - 1
-      ballAlive = False
-
-    if golfKarLives == 0:
-      golfKarAlive = False
-    if oldManLives == 0:
-      oldManAlive = False
-    if enemyLives == 0:
-      enemyAlive = False
-
-
-    enemyRect.x += enemySpeed
- 
     if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
       ballRect.x += ballSpeed[0]
       ballRect.y += ballSpeed[1]
@@ -499,82 +345,243 @@ while started == 1:
     elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
       ballAlive = False
 
-    if playerRect.colliderect(ballMachineRect) and tick > ballClock:
-      amountOfBalls = 5
-      ballClock = tick + 600
-    
-    if tick < ballClock - 500:
-      drawMessage("You got new ballz!", width/2, height/2, 90)
-
     drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
 
-    if oldManRect.x > playerRect.x:
-      oldManRect.x = oldManRect.x - oldManSpeed
-    elif oldManRect.x < playerRect.x:
-      oldManRect.x = oldManRect.x + oldManSpeed
-    
-    if oldManRect.y > playerRect.y:
-      oldManRect.y = oldManRect.y - oldManSpeed
-    elif oldManRect.y < playerRect.x:
-      oldManRect.y = oldManRect.y + oldManSpeed
+    if playerRect.colliderect(ballMachineRect):
+      amountOfBalls = 5
+      ballsReplenishd = True
 
-    if golfKarRect.x > playerRect.x:
-      golfKarRect.x = golfKarRect.x - golfKarSpeed
-    if golfKarRect.x < playerRect.x:
-      golfKarRect.x = golfKarRect.x + golfKarSpeed
+    if ballRect.colliderect(enemyRect) and enemyAlive:
+      enemyAlive = False
+      enemyKilled = True
+      ballAlive = False
 
-    if golfKarRect.y > playerRect.y:
-      golfKarRect.y = golfKarRect.y - golfKarSpeed
-    if golfKarRect.y < playerRect.y:
-      golfKarRect.y = golfKarRect.y + golfKarSpeed
+    if ballRect.colliderect(holeRect) and enemyKilled:
+      started = 1
 
-    
-    if clubWait == True and clubClock <= 10:
-      clubClock += 1
-    elif clubClock > 10:
-      clubWait = False
-
-    if amountOfBalls == 0:
-      drawMessage("You got no ballz!", width/2, height/2, 50)
-    pygame.time.wait(10)
-
-    DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
-
-    if golfKarAlive:
-      DISPLAYSURF.blit(golfKarImg, golfKarRect)
-
-    if oldManAlive == True:
-      ENEMYSURF.blit(oldManImg, oldManRect)
-    if oldManAlive == False and enemyAlive == False and not golfKarAlive:
-      DISPLAYSURF.blit(holeImg, holeSpriteRect)
-    
-    pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
-    DISPLAYSURF.blit(clubImg, clubRect)
-
-    if enemyAlive == True:
-      ENEMYSURF.blit(enemyImg, enemyRect)
 
     DISPLAYSURF.blit(playerImg, playerRect)
 
+    if enemyKilled:
+      DISPLAYSURF.blit(holeImg, holeSpriteRect)
+
+    if enemyAlive:
+      DISPLAYSURF.blit(enemyImg,enemyRect)
+
+    if ballDispencerAlive:
+      DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
+
+    if ballAlive: 
+      DISPLAYSURF.blit(ballImg, ballRect)
+
     pygame.time.wait(10)
     pygame.display.update()
-    tick += 1
 
 
-  pygame.mixer.music.load(youDed)
-  pygame.mixer.music.play(-1)
-  while not alive:
-    tick = 0
-    startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
-    DISPLAYSURF.blit(startMenuImg, (0, 0))
 
-    drawMessage("Press space to restart", width/2, 600, 30)
-    drawTitle("You Died", width/2, 300)
-    for event in pygame.event.get():   
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-        pygame.quit()
-        sys.exit()
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-        alive = True
-    
-    pygame.display.update()
+
+  while started == 1:
+
+    enemyRect.y = randint(0, height)
+    enemyRect.x = randint(0, width)
+    holeSpriteRect.x = 1200
+    holeSpriteRect.y = height/2
+    holeRect = pygame.Rect(holeSpriteRect.x, holeSpriteRect.y + 75, 45, 25)
+    playerRect.y = 0
+    playerRect.x = 0
+    enemyAlive = True
+    level = 1
+    oldManRect.x = randint(0, width)
+    oldManRect.y = randint(0, height)
+    oldManAlive = True
+    ballMachineRect.x = width - 100
+    ballMachineRect.y = 0
+    ballClock = 0
+    golfKarAlive = True
+    golfKarRect.x = randint(0, width)
+    golfKarRect.y = randint(0, height)
+    golfKarLives = 5
+    amountOfBalls = 5
+    clubWait = False
+    clubClock = 0
+    enemyLives = 1
+    oldManLives = 1
+    enemyMaxLives = 1
+    oldManMaxLives = 1
+    golfKarMaxLives = 5
+    leveledUp = True
+    pygame.mixer.music.load(gameMusic)
+    pygame.mixer.music.play(-1)
+
+    while alive:
+      drawBG(0, 0, width, height)
+      keypress = pygame.key.get_pressed()
+      move(keypress)
+      
+      if enemyRect.x > width - enemyImg.get_width():
+        enemyRect.x = 0
+        enemyRect.y = randint(0, height)
+
+      for event in pygame.event.get():   
+        if event.type == QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+          pygame.quit()
+          sys.exit()      
+
+      if (playerRect.colliderect(enemyRect) and enemyAlive == True) or (playerRect.colliderect(oldManRect) and oldManAlive == True) or (playerRect.colliderect(golfKarRect) and golfKarAlive == True):
+        alive = False
+        ballAlive = False
+        enemyAlive = False
+        oldManAlive = False
+        golfKarAlive = False
+      elif ballRect.colliderect(holeRect) and enemyAlive == False and oldManAlive == False and not golfKarAlive:
+        level = level+1 
+        leveledUp = False
+        ballAlive = False
+        enemyAlive = True
+        golfKarAlive = True
+        oldManAlive = True
+        if level == 2 and not leveledUp:
+          enemySpeed = enemySpeed + 1
+          oldManSpeed = oldManSpeed + 1
+          leveledUp = True
+        if level == 3 and not leveledUp:
+          oldManMaxLives += oldManMaxLives
+          enemySpeed += enemySpeed
+          leveledUp = True
+        if level == 4 and not leveledUp:
+          oldManSpeed += oldManSpeed
+          golfKarMaxLives += golfKarMaxLives
+          leveledUp = True
+        if level == 5 and not leveledUp:
+          enemyMaxLives += enemyMaxLives
+          enemySpeed += enemySpeed
+          leveledUp = True
+        if level > 5 and not leveledUp:
+          enemyMaxLives = enemyMaxLives + 1
+          oldManMaxLives = oldManMaxLives + 1
+          golfKarMaxLives = golfKarMaxLives + 1
+          enemySpeed += enemySpeed
+          oldManSpeed += oldManSpeed
+          golfKarSpeed += golfKarSpeed
+
+
+        golfKarRect.x = randint(0, width)
+        golfKarRect.y = randint(0, height)
+        oldManRect.x = randint(0, width)
+        oldManRect.y = randint(0, height)
+        enemyRect.x = randint(0, width)
+        enemyRect.y = randint(0, height)
+        golfKarLives = golfKarMaxLives
+        enemyLives = enemyMaxLives
+        oldManLives = oldManMaxLives
+
+      elif ballRect.colliderect(enemyRect) and enemyAlive and ballAlive:
+        ballAlive = False
+        enemyLives = enemyLives - 1
+      elif ballRect.colliderect(oldManRect) and oldManAlive and ballAlive:
+        ballAlive = False
+        oldManLives = oldManLives - 1
+      elif ballRect.colliderect(golfKarRect) and golfKarAlive and ballAlive:
+        golfKarLives = golfKarLives - 1
+        ballAlive = False
+
+      if golfKarLives == 0:
+        golfKarAlive = False
+      if oldManLives == 0:
+        oldManAlive = False
+      if enemyLives == 0:
+        enemyAlive = False
+
+
+      enemyRect.x += enemySpeed
+  
+      if ballAlive and ballRect.x < width and ballRect.y < height and ballRect.x > 0 and ballRect.y > 0:
+        ballRect.x += ballSpeed[0]
+        ballRect.y += ballSpeed[1]
+        DISPLAYSURF.blit (ballImg, ballRect)
+      elif ballAlive and (ballRect.x >= width or ballRect.y >= height or ballRect.x <= 0 or ballRect.y <= 0):
+        ballAlive = False
+
+      if playerRect.colliderect(ballMachineRect) and tick > ballClock:
+        amountOfBalls = 5
+        ballClock = tick + 600
+      
+      if tick < ballClock - 500:
+        drawMessage("You got new ballz!", width/2, height/2, 90)
+
+      drawMessage("Balls: " + str(amountOfBalls), width - 50, height - 50, 20)
+
+      if oldManRect.x > playerRect.x:
+        oldManRect.x = oldManRect.x - oldManSpeed
+      elif oldManRect.x < playerRect.x:
+        oldManRect.x = oldManRect.x + oldManSpeed
+      
+      if oldManRect.y > playerRect.y:
+        oldManRect.y = oldManRect.y - oldManSpeed
+      elif oldManRect.y < playerRect.x:
+        oldManRect.y = oldManRect.y + oldManSpeed
+
+      if golfKarRect.x > playerRect.x:
+        golfKarRect.x = golfKarRect.x - golfKarSpeed
+      if golfKarRect.x < playerRect.x:
+        golfKarRect.x = golfKarRect.x + golfKarSpeed
+
+      if golfKarRect.y > playerRect.y:
+        golfKarRect.y = golfKarRect.y - golfKarSpeed
+      if golfKarRect.y < playerRect.y:
+        golfKarRect.y = golfKarRect.y + golfKarSpeed
+
+      
+      if clubWait == True and clubClock <= 10:
+        clubClock += 1
+      elif clubClock > 10:
+        clubWait = False
+
+      if amountOfBalls == 0:
+        drawMessage("You got no ballz!", width/2, height/2, 50)
+      pygame.time.wait(10)
+
+      DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
+
+      if golfKarAlive:
+        DISPLAYSURF.blit(golfKarImg, golfKarRect)
+
+      if oldManAlive == True:
+        ENEMYSURF.blit(oldManImg, oldManRect)
+      if oldManAlive == False and enemyAlive == False and not golfKarAlive:
+        DISPLAYSURF.blit(holeImg, holeSpriteRect)
+      
+      pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
+      DISPLAYSURF.blit(clubImg, clubRect)
+
+      if enemyAlive == True:
+        ENEMYSURF.blit(enemyImg, enemyRect)
+
+      DISPLAYSURF.blit(playerImg, playerRect)
+
+      pygame.time.wait(10)
+      pygame.display.update()
+      tick += 1
+
+
+    pygame.mixer.music.load(youDed)
+    pygame.mixer.music.play(-1)
+    while not alive:
+      tick = 0
+      startMenuImg = pygame.transform.scale(startMenuImg, (width, height))
+      DISPLAYSURF.blit(startMenuImg, (0, 0))
+
+      drawMessage("Press space to return to main title", width/2, 600, 30)
+      drawMessage("You achieved wave: " + str(level), width/2, 700, 30)
+      drawTitle("You Died", width/2, 300)
+
+      for event in pygame.event.get():   
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+          pygame.quit()
+          sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+          started = 0
+          alive = True
+          enemyAlive = False
+      
+      pygame.display.update()
