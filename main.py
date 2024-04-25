@@ -276,7 +276,7 @@ def drawBG(x, y, width, height):
   BGimgCode = None
   for i in range(0, int(width/100) + 1):
     for j in range(0, int(height/100) + 1):
-      BGimgCode = BGmap[i][j]
+      BGimgCode = BGmap[j][i]
       if BGimgCode == 1:
         BGimg = FairwayImg
       elif BGimgCode == 2:
