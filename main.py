@@ -196,14 +196,14 @@ def switchClub(input):
     elif clubSelected == 1:
       clubSelected = 0
       ballMovementSpeed = 5
-      ballRandomness = 1
+      ballRandomness = 2
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
     elif clubSelected == 2:
       clubSelected = 1
       ballMovementSpeed = 7
-      ballRandomness = 2
+      ballRandomness = 4
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
@@ -212,7 +212,7 @@ def switchClub(input):
     if clubSelected == 0:
       clubSelected = 1
       ballMovementSpeed = 7
-      ballRandomness = 2
+      ballRandomness = 4
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
@@ -226,7 +226,7 @@ def switchClub(input):
     elif clubSelected == 2:
       clubSelected = 0
       ballMovementSpeed = 5
-      ballRandomness = 1
+      ballRandomness = 2
       clubImg = pygame.image.load(clubImgPaths[clubSelected]).convert_alpha()
       clubClock = 0
       clubWait = True
@@ -238,7 +238,7 @@ def spawnBallMovingRight():
 
   ballAlive = True
   ballRect.x, ballRect.y = playerRect.x + 5, playerRect.y + 40
-  ballSpeed = ballMovementSpeed, randint(-ballRandomness, ballRandomness)/50
+  ballSpeed = ballMovementSpeed, randint(-ballRandomness, ballRandomness)/10
 
 def spawnBallMovingLeft():
   global ballAlive
@@ -246,7 +246,7 @@ def spawnBallMovingLeft():
 
   ballAlive = True
   ballRect.x, ballRect.y = playerRect.x - 5, playerRect.y + 40
-  ballSpeed = -ballMovementSpeed, randint(-ballRandomness, ballRandomness)
+  ballSpeed = -ballMovementSpeed, randint(-ballRandomness, ballRandomness)/10
 
 def spawnBallMovingUp():
   global ballAlive
@@ -254,7 +254,7 @@ def spawnBallMovingUp():
 
   ballAlive = True
   ballRect.x, ballRect.y = playerRect.x, playerRect.y
-  ballSpeed = randint(-ballRandomness, ballRandomness), -ballMovementSpeed
+  ballSpeed = randint(-ballRandomness, ballRandomness)/10, -ballMovementSpeed
 
 def spawnBallMovingDown():
   global ballAlive
@@ -262,7 +262,7 @@ def spawnBallMovingDown():
 
   ballAlive = True
   ballRect.x, ballRect.y = playerRect.x, playerRect.y + 20
-  ballSpeed = randint(-ballRandomness, ballRandomness), ballMovementSpeed
+  ballSpeed = randint(-ballRandomness, ballRandomness)/10, ballMovementSpeed
 
 def drawBG(x, y, width, height):
   """
