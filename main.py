@@ -1,5 +1,6 @@
 #libraries
 import sys
+import math
 import pygame
 from pygame.locals import QUIT
 from random import randint as randint
@@ -110,24 +111,12 @@ bossRect = bossImg.get_rect()
 bossLives = 20
 bossSpeed = 3
 
-bossStoneLeftImgPath = "stone.png"
-bossStoneLeftImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
-bossStoneLeftRect = bossStoneLeftImg.get_rect()
+bossStoneImgPath = "stone.png"
+bossStoneImg = pygame.image.load(bossStoneImgPath).convert_alpha()
+bossStoneRect = bossStoneImg.get_rect()
+stoneSpeed = 0, 0
 
-bossStoneRightImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
-bossStoneRightRect = bossStoneRightImg.get_rect()
-
-bossStoneUpImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
-bossStoneUpRect = bossStoneUpImg.get_rect()
-
-bossStoneDownImg = pygame.image.load(bossStoneLeftImgPath).convert_alpha()
-bossStoneDownRect = bossStoneDownImg.get_rect()
-
-
-
-
-
-pygame.display.set_caption("Golfrogue")
+pygame.display.set_caption("GolfMania")
 
 #functions
 
@@ -307,6 +296,25 @@ def drawTitle(message, x, y):
   TextRect.center = (x, y)
   DISPLAYSURF.blit(TextSurf, TextRect)
 
+def throwStone():
+  dx = playerRect.centerx - bossRect.centerx
+  dy = playerRect.centery - bossRect.centery
+
+  directionAngle = round(math.degrees(math.atan2(dy, dx)))
+  if directionAngle < 0:
+    directionAngle = 360 + directionAngle
+
+  if directionAngle < 45 or directionAngle >= 315:
+    stoneSpeed = 0, -5
+  elif directionAngle >= 45 and directionAngle < 135:
+    stoneSpeed = 5, 0
+  elif directionAngle >= 135 and directionAngle < 225:
+    stoneSpeed = 0, 5
+  elif directionAngle >= 225 and directionAngle <315:
+    stoneSpeed = -5, 0
+  print(directionAngle)
+  return stoneSpeed
+
 pygame.mixer.music.load(startMenuMusic)
 pygame.mixer.music.play(-1)
 while started == 0:
@@ -437,7 +445,7 @@ while started == 2:
     DISPLAYSURF.blit(enemyImg,enemyRect)
 
   if ballDispenserAlive:
-    DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
+    DISPLAYSURF.blit(ballMachineimg, ballMachineRect) 
 
   if ballAlive: 
     DISPLAYSURF.blit(ballImg, ballRect)
@@ -515,6 +523,8 @@ while started == 1:
       oldManRect.y = randint(0, height)
       enemyRect.x = randint(0, width)
       enemyRect.y = randint(0, height)
+      bossRect.x = randint(0, width)
+      bossRect.y = -80
       golfKarLives = golfKarMaxLives
       enemyLives = enemyMaxLives
       oldManLives = oldManMaxLives
@@ -565,6 +575,12 @@ while started == 1:
     else:
       drawMessage("Bossfight", width - 80, height - 60, 30)
 
+    if tick % 200 == 0:
+      stoneSpeed = throwStone()
+      bossStoneRect.centerx, bossStoneRect.centery = bossRect.x + 10, bossRect.y + 70
+    if bossStoneRect.x < width and bossStoneRect.y < height and bossStoneRect.x > 0 and bossStoneRect.y > 0:
+      bossStoneRect.x += ballSpeed[0]
+      bossStoneRect.y += ballSpeed[1]
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
@@ -586,15 +602,15 @@ while started == 1:
     if golfKarRect.y < playerRect.y + 30:
       golfKarRect.y += golfKarSpeed
 
-    if bossRect.x > playerRect.x:
+    if bossRect.x > playerRect.x - bossRect.width/2:
       bossRect.x = bossRect.x - bossSpeed
-    if bossRect.x < playerRect.x:
+    if bossRect.x < playerRect.x - bossRect.width/2:
       bossRect.x = bossRect.x + bossSpeed
 
-    if bossRect.y > playerRect.y:
-      bossRect.y -= bossSpeed
-    if bossRect.y < bossRect.y:
+    if bossRect.y < playerRect.y and bossAlive:
       bossRect.y += bossSpeed
+    if bossRect.y > playerRect.y and bossAlive:
+      bossRect.y -= bossSpeed
 
     if level == 2 and not leveledUp:
       enemySpeed = enemySpeed + 1
@@ -668,6 +684,9 @@ while started == 1:
 
     DISPLAYSURF.blit(ballMachineimg, ballMachineRect)
 
+    pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
+    DISPLAYSURF.blit(clubImg, clubRect)
+
     if golfKarAlive:
       DISPLAYSURF.blit(golfKarImg, golfKarRect)
 
@@ -679,9 +698,7 @@ while started == 1:
     
     if bossAlive:
       DISPLAYSURF.blit(bossImg, bossRect)
-    
-    pygame.draw.rect(DISPLAYSURF, darkGreen, clubBGRect)
-    DISPLAYSURF.blit(clubImg, clubRect)
+      DISPLAYSURF.blit(bossStoneImg, bossStoneRect)
 
     if enemyAlive:
       ENEMYSURF.blit(enemyImg, enemyRect)
