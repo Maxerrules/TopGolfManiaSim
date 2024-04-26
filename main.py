@@ -109,14 +109,15 @@ bossImgPath = "boss.png"
 bossImg = pygame.image.load(bossImgPath).convert_alpha()
 bossRect = bossImg.get_rect()
 bossLives = 20
-bossSpeed = 3
+bossSpeed = 2
 
 bossStoneImgPath = "stone.png"
 bossStoneImg = pygame.image.load(bossStoneImgPath).convert_alpha()
 bossStoneRect = bossStoneImg.get_rect()
 stoneSpeed = 0, 0
+thrown = False
 
-pygame.display.set_caption("GolfMania")
+pygame.display.set_caption("GolfMania                                                                                                                                                                                                                                                                                                                                                                                         ᵢᶫᵒᵛᵉˢᶜᵣᵘᵐ")
 
 #functions
 
@@ -477,6 +478,7 @@ while started == 1:
   golfKarRect.y = randint(0, height)
   golfKarLives = 5
   amountOfBalls = 5
+  thrown = False
   clubWait = False
   clubClock = 0
   enemyLives = 1
@@ -505,7 +507,7 @@ while started == 1:
         pygame.quit()
         sys.exit()      
 
-    if (playerRect.colliderect(enemyRect) and enemyAlive) or (playerRect.colliderect(oldManRect) and oldManAlive) or (playerRect.colliderect(golfKarRect) and golfKarAlive) or (playerRect.colliderect(bossRect) and bossAlive):
+    if (playerRect.colliderect(enemyRect) and enemyAlive) or (playerRect.colliderect(oldManRect) and oldManAlive) or (playerRect.colliderect(golfKarRect) and golfKarAlive) or (playerRect.colliderect(bossRect) and bossAlive) or (playerRect.colliderect(bossStoneRect) and bossAlive and thrown):
       alive = False
       dead = True
       print("You died")
@@ -577,10 +579,15 @@ while started == 1:
 
     if tick % 200 == 0:
       stoneSpeed = throwStone()
+      thrown = True
       bossStoneRect.centerx, bossStoneRect.centery = bossRect.x + 10, bossRect.y + 70
     if bossStoneRect.x < width and bossStoneRect.y < height and bossStoneRect.x > 0 and bossStoneRect.y > 0:
       bossStoneRect.x += ballSpeed[0]
       bossStoneRect.y += ballSpeed[1]
+    else:
+      thrown = False
+
+
 
     if oldManRect.x > playerRect.x:
       oldManRect.x = oldManRect.x - oldManSpeed
